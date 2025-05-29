@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Catalog from "./pages/Catalog";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
+import ProductFlow from "./pages/ProductFlow";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +20,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/productos" element={<ProductFlow />} />
           <Route path="/catalog" element={<Catalog />} />
           <Route path="/contact" element={<Contact />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
