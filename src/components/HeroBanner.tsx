@@ -38,8 +38,8 @@ const HeroBanner = () => {
           </div>
           <div className="lg:pl-12">
             <div className="relative">
-              <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Componentes iPhone" className="w-full h-auto rounded-lg shadow-2xl hover-lift" />
-              <div className="absolute -bottom-6 -right-6 bg-electric-blue text-white p-6 rounded-lg shadow-lg">
+              <img alt="Componentes iPhone" className="w-full h-auto rounded-lg shadow-2xl hover-lift" src="/lovable-uploads/1f88840e-c2ed-4975-b3d7-1e63231bc622.jpg" />
+              <div className="absolute -bottom-6 -right-6 bg-electric-blue text-white p-6 rounded-lg shadow-lg py-[20px] px-[150px]">
                 <div className="text-2xl font-bold">Garantía</div>
                 <div className="text-sm">1 Año</div>
               </div>
