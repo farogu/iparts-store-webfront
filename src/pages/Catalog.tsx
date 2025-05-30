@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useNavigate } from 'react';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -15,6 +14,7 @@ const Catalog = () => {
   const [selectedModel, setSelectedModel] = useState('all');
   const [priceRange, setPriceRange] = useState('all');
   const [sortBy, setSortBy] = useState('name');
+  const navigate = useNavigate();
 
   const products = [
     {
@@ -269,7 +269,11 @@ const Catalog = () => {
                   <Button className="flex-1 bg-electric-blue hover:bg-blue-600 text-white">
                     Agregar al Carrito
                   </Button>
-                  <Button variant="outline" className="px-4">
+                  <Button 
+                    variant="outline" 
+                    className="px-4"
+                    onClick={() => navigate(`/product/${product.id}`)}
+                  >
                     Ver
                   </Button>
                 </div>
