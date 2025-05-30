@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -23,6 +22,46 @@ const ModelSelector = ({ onModelSelect, selectedModel }: ModelSelectorProps) => 
   const [hoveredModel, setHoveredModel] = useState<string | null>(null);
 
   const iPhoneModels: iPhoneModel[] = [
+    // 2024-2025 Models
+    {
+      id: 'iphone-16e',
+      name: 'iPhone 16e',
+      displayName: '16e',
+      year: '2025',
+      image: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=300&q=80',
+      isPopular: true
+    },
+    {
+      id: 'iphone-16-pro-max',
+      name: 'iPhone 16 Pro Max',
+      displayName: '16 Pro Max',
+      year: '2024',
+      image: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=300&q=80',
+      isPopular: true
+    },
+    {
+      id: 'iphone-16-pro',
+      name: 'iPhone 16 Pro',
+      displayName: '16 Pro',
+      year: '2024',
+      image: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=300&q=80',
+      isPopular: true
+    },
+    {
+      id: 'iphone-16-plus',
+      name: 'iPhone 16 Plus',
+      displayName: '16 Plus',
+      year: '2024',
+      image: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=300&q=80'
+    },
+    {
+      id: 'iphone-16',
+      name: 'iPhone 16',
+      displayName: '16',
+      year: '2024',
+      image: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=300&q=80'
+    },
+    // 2023 Models
     {
       id: 'iphone-15-pro-max',
       name: 'iPhone 15 Pro Max',
@@ -36,8 +75,14 @@ const ModelSelector = ({ onModelSelect, selectedModel }: ModelSelectorProps) => 
       name: 'iPhone 15 Pro',
       displayName: '15 Pro',
       year: '2023',
-      image: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=300&q=80',
-      isPopular: true
+      image: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=300&q=80'
+    },
+    {
+      id: 'iphone-15-plus',
+      name: 'iPhone 15 Plus',
+      displayName: '15 Plus',
+      year: '2023',
+      image: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=300&q=80'
     },
     {
       id: 'iphone-15',
@@ -46,18 +91,25 @@ const ModelSelector = ({ onModelSelect, selectedModel }: ModelSelectorProps) => 
       year: '2023',
       image: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=300&q=80'
     },
+    // 2022 Models
     {
       id: 'iphone-14-pro-max',
       name: 'iPhone 14 Pro Max',
       displayName: '14 Pro Max',
       year: '2022',
-      image: 'https://images.unsplash.com/photo-1663499482523-1c0206ad7bd4?w=300&q=80',
-      isPopular: true
+      image: 'https://images.unsplash.com/photo-1663499482523-1c0206ad7bd4?w=300&q=80'
     },
     {
       id: 'iphone-14-pro',
       name: 'iPhone 14 Pro',
       displayName: '14 Pro',
+      year: '2022',
+      image: 'https://images.unsplash.com/photo-1663499482523-1c0206ad7bd4?w=300&q=80'
+    },
+    {
+      id: 'iphone-14-plus',
+      name: 'iPhone 14 Plus',
+      displayName: '14 Plus',
       year: '2022',
       image: 'https://images.unsplash.com/photo-1663499482523-1c0206ad7bd4?w=300&q=80'
     },
@@ -68,6 +120,14 @@ const ModelSelector = ({ onModelSelect, selectedModel }: ModelSelectorProps) => 
       year: '2022',
       image: 'https://images.unsplash.com/photo-1663499482523-1c0206ad7bd4?w=300&q=80'
     },
+    {
+      id: 'iphone-se-3',
+      name: 'iPhone SE (3ª generación)',
+      displayName: 'SE (3ª gen)',
+      year: '2022',
+      image: 'https://images.unsplash.com/photo-1512499617640-c74ae3a79d37?w=300&q=80'
+    },
+    // 2021 Models
     {
       id: 'iphone-13-pro-max',
       name: 'iPhone 13 Pro Max',
@@ -83,12 +143,20 @@ const ModelSelector = ({ onModelSelect, selectedModel }: ModelSelectorProps) => 
       image: 'https://images.unsplash.com/photo-1632633173522-c8fe2ee13b11?w=300&q=80'
     },
     {
+      id: 'iphone-13-mini',
+      name: 'iPhone 13 mini',
+      displayName: '13 mini',
+      year: '2021',
+      image: 'https://images.unsplash.com/photo-1632633173522-c8fe2ee13b11?w=300&q=80'
+    },
+    {
       id: 'iphone-13',
       name: 'iPhone 13',
       displayName: '13',
       year: '2021',
       image: 'https://images.unsplash.com/photo-1632633173522-c8fe2ee13b11?w=300&q=80'
     },
+    // 2020 Models
     {
       id: 'iphone-12-pro-max',
       name: 'iPhone 12 Pro Max',
@@ -104,11 +172,77 @@ const ModelSelector = ({ onModelSelect, selectedModel }: ModelSelectorProps) => 
       image: 'https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=300&q=80'
     },
     {
+      id: 'iphone-12-mini',
+      name: 'iPhone 12 mini',
+      displayName: '12 mini',
+      year: '2020',
+      image: 'https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=300&q=80'
+    },
+    {
       id: 'iphone-12',
       name: 'iPhone 12',
       displayName: '12',
       year: '2020',
       image: 'https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=300&q=80'
+    },
+    {
+      id: 'iphone-se-2',
+      name: 'iPhone SE (2ª generación)',
+      displayName: 'SE (2ª gen)',
+      year: '2020',
+      image: 'https://images.unsplash.com/photo-1512499617640-c74ae3a79d37?w=300&q=80'
+    },
+    // 2019 Models
+    {
+      id: 'iphone-11-pro-max',
+      name: 'iPhone 11 Pro Max',
+      displayName: '11 Pro Max',
+      year: '2019',
+      image: 'https://images.unsplash.com/photo-1574755393849-623942496936?w=300&q=80'
+    },
+    {
+      id: 'iphone-11-pro',
+      name: 'iPhone 11 Pro',
+      displayName: '11 Pro',
+      year: '2019',
+      image: 'https://images.unsplash.com/photo-1574755393849-623942496936?w=300&q=80'
+    },
+    {
+      id: 'iphone-11',
+      name: 'iPhone 11',
+      displayName: '11',
+      year: '2019',
+      image: 'https://images.unsplash.com/photo-1574755393849-623942496936?w=300&q=80'
+    },
+    // 2018 Models
+    {
+      id: 'iphone-xs-max',
+      name: 'iPhone XS Max',
+      displayName: 'XS Max',
+      year: '2018',
+      image: 'https://images.unsplash.com/photo-1542119303-3905eed262db?w=300&q=80'
+    },
+    {
+      id: 'iphone-xs',
+      name: 'iPhone XS',
+      displayName: 'XS',
+      year: '2018',
+      image: 'https://images.unsplash.com/photo-1542119303-3905eed262db?w=300&q=80'
+    },
+    {
+      id: 'iphone-xr',
+      name: 'iPhone XR',
+      displayName: 'XR',
+      year: '2018',
+      image: 'https://images.unsplash.com/photo-1542119303-3905eed262db?w=300&q=80'
+    },
+    // 2017 Models
+    {
+      id: 'iphone-x',
+      name: 'iPhone X',
+      displayName: 'X',
+      year: '2017',
+      image: 'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=300&q=80'
     }
   ];
 

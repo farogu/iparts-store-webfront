@@ -1,9 +1,8 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, ArrowRight, Monitor, Battery, Camera, Smartphone, Volume2, Settings } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Monitor, Battery, Camera, Smartphone, Volume2, Settings, Wrench, Cable } from 'lucide-react';
 
 interface iPhoneModel {
   id: string;
@@ -83,6 +82,22 @@ const PartsSelector = ({ selectedModel, onPartTypeSelect, onBackToModels }: Part
       description: 'Botones de encendido, volumen y home',
       productCount: 28,
       image: 'https://images.unsplash.com/photo-1540829917886-91ab031b1764?w=300&q=80'
+    },
+    {
+      id: 'conectores',
+      name: 'Conectores y Cables',
+      icon: Cable,
+      description: 'Conectores Lightning, USB-C y cables de carga',
+      productCount: 16,
+      image: 'https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=300&q=80'
+    },
+    {
+      id: 'otros',
+      name: 'Otros',
+      icon: Wrench,
+      description: 'Herramientas, adhesivos y accesorios varios',
+      productCount: 22,
+      image: 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=300&q=80'
     }
   ];
 
@@ -190,7 +205,7 @@ const PartsSelector = ({ selectedModel, onPartTypeSelect, onBackToModels }: Part
         <h2 className="text-xl font-semibold text-gray-900 mb-4">
           Todas las Categorías
         </h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
           {partTypes.map((partType) => {
             const IconComponent = partType.icon;
             return (
