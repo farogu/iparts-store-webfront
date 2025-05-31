@@ -26,7 +26,7 @@ export const useShopifyProducts = (searchQuery?: string, productType?: string) =
     queryKey: ['shopify-products', queryString],
     queryFn: () => shopifyApi.getProducts(50, queryString || undefined),
     staleTime: 5 * 60 * 1000, // 5 minutos
-    cacheTime: 10 * 60 * 1000, // 10 minutos
+    gcTime: 10 * 60 * 1000, // 10 minutos (renamed from cacheTime)
   });
 
   return {
@@ -43,7 +43,7 @@ export const useShopifyProduct = (handle: string) => {
     queryFn: () => shopifyApi.getProductByHandle(handle),
     enabled: !!handle,
     staleTime: 5 * 60 * 1000,
-    cacheTime: 10 * 60 * 1000,
+    gcTime: 10 * 60 * 1000, // 10 minutos (renamed from cacheTime)
   });
 
   return {
