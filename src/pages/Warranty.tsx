@@ -1,0 +1,165 @@
+
+import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
+
+const Warranty = () => {
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Navigation />
+      
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <h1 className="text-4xl font-bold text-gray-900 mb-8">Política de Garantía y Devoluciones</h1>
+        
+        <div className="prose prose-lg max-w-none text-gray-700 space-y-8">
+          <section>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">Garantía de Calidad</h2>
+            <p>
+              En iParts Store, garantizamos la calidad de todos nuestros productos. 
+              Todas las piezas y accesorios para iPhone vienen con nuestra garantía 
+              de satisfacción de 30 días y garantía de fabricante cuando aplique.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">Cobertura de Garantía</h2>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="bg-green-50 p-6 rounded-lg border border-green-200">
+                <h3 className="text-xl font-semibold text-green-800 mb-3">Productos Originales</h3>
+                <ul className="space-y-2 text-green-700">
+                  <li>• Garantía de 12 meses</li>
+                  <li>• Defectos de fabricación</li>
+                  <li>• Funcionamiento incorrecto</li>
+                  <li>• Reemplazo gratuito</li>
+                </ul>
+              </div>
+              <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
+                <h3 className="text-xl font-semibold text-blue-800 mb-3">Productos Compatibles</h3>
+                <ul className="space-y-2 text-blue-700">
+                  <li>• Garantía de 6 meses</li>
+                  <li>• Defectos de fabricación</li>
+                  <li>• Devolución del dinero</li>
+                  <li>• Soporte técnico incluido</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">Política de Devoluciones</h2>
+            <div className="bg-gray-100 p-6 rounded-lg">
+              <h3 className="text-lg font-semibold mb-3">Plazo de Devolución: 30 días</h3>
+              <p className="mb-4">
+                Puedes devolver cualquier producto dentro de 30 días desde la fecha 
+                de compra si no estás completamente satisfecho.
+              </p>
+              
+              <h4 className="font-semibold mb-2">Condiciones para Devoluciones:</h4>
+              <ul className="list-disc pl-6 space-y-1">
+                <li>El producto debe estar en su empaque original</li>
+                <li>No debe mostrar signos de uso o daño</li>
+                <li>Incluir todos los accesorios y documentación</li>
+                <li>Proporcionar número de pedido original</li>
+              </ul>
+            </div>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">Proceso de Devolución</h2>
+            <div className="space-y-4">
+              <div className="flex items-start space-x-4">
+                <div className="bg-electric-blue text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">1</div>
+                <div>
+                  <h4 className="font-semibold">Contacta con nuestro equipo</h4>
+                  <p>Envía un email a returns@ipartsstore.com con tu número de pedido</p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-4">
+                <div className="bg-electric-blue text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">2</div>
+                <div>
+                  <h4 className="font-semibold">Recibe autorización</h4>
+                  <p>Te enviaremos un RMA (Return Merchandise Authorization) number</p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-4">
+                <div className="bg-electric-blue text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">3</div>
+                <div>
+                  <h4 className="font-semibold">Envía el producto</h4>
+                  <p>Empaca el producto de forma segura e incluye el número RMA</p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-4">
+                <div className="bg-electric-blue text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">4</div>
+                <div>
+                  <h4 className="font-semibold">Procesamos tu devolución</h4>
+                  <p>Reembolso procesado en 5-7 días hábiles después de recibir el producto</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">Gastos de Envío</h2>
+            <ul className="space-y-3">
+              <li className="flex items-start space-x-3">
+                <span className="text-green-600">✓</span>
+                <span><strong>Producto defectuoso:</strong> Cubrimos todos los gastos de envío</span>
+              </li>
+              <li className="flex items-start space-x-3">
+                <span className="text-green-600">✓</span>
+                <span><strong>Error nuestro:</strong> Cubrimos todos los gastos de envío</span>
+              </li>
+              <li className="flex items-start space-x-3">
+                <span className="text-orange-600">●</span>
+                <span><strong>Cambio de opinión:</strong> El cliente cubre los gastos de envío de devolución</span>
+              </li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">Exclusiones de Garantía</h2>
+            <div className="bg-red-50 p-6 rounded-lg border border-red-200">
+              <p className="text-red-800 mb-3">La garantía NO cubre:</p>
+              <ul className="list-disc pl-6 space-y-1 text-red-700">
+                <li>Daños por mal uso o instalación incorrecta</li>
+                <li>Daños por líquidos o agua</li>
+                <li>Desgaste normal del producto</li>
+                <li>Daños físicos o caídas</li>
+                <li>Modificaciones no autorizadas</li>
+                <li>Uso comercial intensivo</li>
+              </ul>
+            </div>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">Instalación y Soporte</h2>
+            <p>
+              Ofrecemos guías de instalación gratuitas y soporte técnico para todos 
+              nuestros productos. Si necesitas ayuda con la instalación, contáctanos 
+              antes de proceder para evitar daños no cubiertos por la garantía.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">Contacto para Garantías</h2>
+            <div className="bg-gray-100 p-6 rounded-lg">
+              <p><strong>Email de Devoluciones:</strong> returns@ipartsstore.com</p>
+              <p><strong>Email de Garantías:</strong> warranty@ipartsstore.com</p>
+              <p><strong>Teléfono:</strong> +1 (555) 123-4567 (Ext. 2)</p>
+              <p><strong>Horario:</strong> Lunes a Viernes, 9:00 AM - 6:00 PM EST</p>
+            </div>
+          </section>
+
+          <section>
+            <p className="text-sm text-gray-600 mt-8">
+              Última actualización: {new Date().toLocaleDateString('es-ES')}
+            </p>
+          </section>
+        </div>
+      </div>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default Warranty;

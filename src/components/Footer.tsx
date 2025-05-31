@@ -1,4 +1,6 @@
 
+import { Link } from "react-router-dom";
+
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
@@ -38,10 +40,10 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold mb-4">Enlaces Rápidos</h4>
             <ul className="space-y-2">
-              <li><a href="/" className="text-gray-400 hover:text-electric-blue transition-colors">Inicio</a></li>
-              <li><a href="/catalog" className="text-gray-400 hover:text-electric-blue transition-colors">Catálogo</a></li>
+              <li><Link to="/" className="text-gray-400 hover:text-electric-blue transition-colors">Inicio</Link></li>
+              <li><Link to="/catalog" className="text-gray-400 hover:text-electric-blue transition-colors">Catálogo</Link></li>
               <li><a href="/about" className="text-gray-400 hover:text-electric-blue transition-colors">Sobre Nosotros</a></li>
-              <li><a href="/contact" className="text-gray-400 hover:text-electric-blue transition-colors">Contacto</a></li>
+              <li><Link to="/contact" className="text-gray-400 hover:text-electric-blue transition-colors">Contacto</Link></li>
               <li><a href="/shipping" className="text-gray-400 hover:text-electric-blue transition-colors">Envíos</a></li>
             </ul>
           </div>
@@ -50,11 +52,11 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold mb-4">Categorías</h4>
             <ul className="space-y-2">
-              <li><a href="/catalog?category=pantallas" className="text-gray-400 hover:text-electric-blue transition-colors">Pantallas</a></li>
-              <li><a href="/catalog?category=baterias" className="text-gray-400 hover:text-electric-blue transition-colors">Baterías</a></li>
-              <li><a href="/catalog?category=carcasas" className="text-gray-400 hover:text-electric-blue transition-colors">Carcasas</a></li>
-              <li><a href="/catalog?category=camaras" className="text-gray-400 hover:text-electric-blue transition-colors">Cámaras</a></li>
-              <li><a href="/catalog?category=accesorios" className="text-gray-400 hover:text-electric-blue transition-colors">Accesorios</a></li>
+              <li><Link to="/catalog?category=pantallas" className="text-gray-400 hover:text-electric-blue transition-colors">Pantallas</Link></li>
+              <li><Link to="/catalog?category=baterias" className="text-gray-400 hover:text-electric-blue transition-colors">Baterías</Link></li>
+              <li><Link to="/catalog?category=carcasas" className="text-gray-400 hover:text-electric-blue transition-colors">Carcasas</Link></li>
+              <li><Link to="/catalog?category=camaras" className="text-gray-400 hover:text-electric-blue transition-colors">Cámaras</Link></li>
+              <li><Link to="/catalog?category=accesorios" className="text-gray-400 hover:text-electric-blue transition-colors">Accesorios</Link></li>
             </ul>
           </div>
 
@@ -91,15 +93,15 @@ const Footer = () => {
               © {currentYear} iParts Store. Todos los derechos reservados.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
-              <a href="/privacy" className="text-gray-400 hover:text-electric-blue text-sm transition-colors">
+              <Link to="/privacy" className="text-gray-400 hover:text-electric-blue text-sm transition-colors">
                 Política de Privacidad
-              </a>
-              <a href="/terms" className="text-gray-400 hover:text-electric-blue text-sm transition-colors">
+              </Link>
+              <Link to="/terms" className="text-gray-400 hover:text-electric-blue text-sm transition-colors">
                 Términos de Servicio
-              </a>
-              <a href="/warranty" className="text-gray-400 hover:text-electric-blue text-sm transition-colors">
+              </Link>
+              <Link to="/warranty" className="text-gray-400 hover:text-electric-blue text-sm transition-colors">
                 Garantía
-              </a>
+              </Link>
             </div>
           </div>
         </div>
