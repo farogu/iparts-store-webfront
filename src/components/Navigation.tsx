@@ -1,11 +1,13 @@
+
 import { useState } from 'react';
-import { Search, ShoppingCart, Menu, X, ArrowLeft } from 'lucide-react';
+import { Search, Menu, X, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useNavigate } from 'react-router-dom';
 import PromoBanner from './PromoBanner';
+import CartButton from './CartButton';
 
 interface NavigationProps {
   onProductsClick?: () => void;
@@ -23,7 +25,6 @@ const Navigation = ({
   currentStep 
 }: NavigationProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [cartItems] = useState(3);
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
 
@@ -49,7 +50,6 @@ const Navigation = ({
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
-    // Búsqueda en tiempo real opcional
     if (onSearchGlobal && e.target.value.length > 2) {
       onSearchGlobal(e.target.value);
     }
@@ -164,16 +164,7 @@ const Navigation = ({
             {/* Cart and Mobile Menu */}
             <div className="flex items-center space-x-4">
               {/* Cart */}
-              <div className="relative">
-                <Button variant="ghost" size="sm" className="relative">
-                  <ShoppingCart className="h-5 w-5" />
-                  {cartItems > 0 && (
-                    <Badge className="absolute -top-2 -right-2 bg-electric-blue text-white text-xs min-w-[20px] h-5 flex items-center justify-center rounded-full">
-                      {cartItems}
-                    </Badge>
-                  )}
-                </Button>
-              </div>
+              <CartButton />
 
               {/* Mobile menu */}
               <div className="md:hidden">
@@ -251,12 +242,6 @@ const Navigation = ({
 
                       {/* Quick Actions */}
                       <div className="border-t pt-6">
-                        <Button 
-                          className="w-full mb-3 bg-electric-blue hover:bg-blue-600 text-white"
-                          onClick={() => setIsMenuOpen(false)}
-                        >
-                          Ver Carrito ({cartItems})
-                        </Button>
                         {showBackButton && (
                           <Button 
                             variant="outline" 
