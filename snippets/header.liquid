@@ -1,386 +1,94 @@
 
-{%- liquid
-  assign sticky_header = sticky_header | default: false
--%}
+<!-- Promo Banner -->
+<div class="promo-banner bg-electric-blue text-white text-center py-2">
+  <p class="text-sm">🚚 Envío GRATIS en pedidos mayores a $500 MXN | ⚡ Entrega en 24-48hrs</p>
+</div>
 
-<header class="header header--middle-left page-width{% if sticky_header %} header--top-center{% endif %}{% if settings.enable_sticky_header %} shopify-section-header-sticky{% endif %} header--has-menu">
-  {%- if settings.enable_sticky_header -%}
-    <sticky-header data-sticky-type="on-scroll-up" class="header-wrapper color-scheme-1 gradient header-wrapper--border-bottom">
-  {%- else -%}
-    <div class="header-wrapper color-scheme-1 gradient header-wrapper--border-bottom">
-  {%- endif -%}
-    
-    <header class="header header--middle-left page-width{% if settings.enable_sticky_header %} shopify-section-header-sticky{% endif %}{% if settings.enable_sticky_header %} header--top-center{% endif %} header--has-menu">
-      <div class="header__inner">
-        <div class="header__heading">
-          {%- if request.page_type == 'index' -%}
-            <h1 class="header__heading-text">
-          {%- else -%}
-            <div class="header__heading-text">
-          {%- endif -%}
-            <a href="{{ routes.root_url }}" class="header__heading-link link link--text focus-inset">
-              {%- if settings.logo != blank -%}
-                <div class="header__heading-logo-wrapper">
-                  {%- assign logo_alt = settings.logo.alt | default: shop.name | escape -%}
-                  {%- assign logo_height = settings.logo_width | divided_by: settings.logo.aspect_ratio -%}
-                  {% capture sizes %}(max-width: {{ settings.logo_width | times: 2 }}px) 50vw, {{ settings.logo_width }}px{% endcapture %}
-                  {% capture widths %}{{ settings.logo_width }}, {{ settings.logo_width | times: 1.5 | round }}, {{ settings.logo_width | times: 2 }}{% endcapture %}
-                  {{ settings.logo | image_url: width: 600 | image_tag:
-                    class: 'header__heading-logo motion-reduce',
-                    widths: widths,
-                    height: logo_height,
-                    width: settings.logo_width,
-                    alt: logo_alt,
-                    sizes: sizes,
-                    preload: true
-                  }}
-                </div>
-              {%- else -%}
-                <span class="h2">i<span style="color: var(--electric-blue);">Parts</span> Store</span>
-              {%- endif -%}
-            </a>
-          {%- if request.page_type == 'index' -%}
-            </h1>
-          {%- else -%}
-            </div>
-          {%- endif -%}
-        </div>
-
-        <nav class="header__inline-menu">
-          <ul class="list-menu list-menu--inline" role="list">
-            {%- for link in section.settings.menu.links -%}
-              <li>
-                {%- if link.links != blank -%}
-                  <header-menu>
-                    <details id="Details-HeaderMenu-{{ forloop.index }}" class="mega-menu">
-                      <summary id="HeaderMenu-{{ link.handle }}" class="header__menu-item list-menu__item link focus-inset">
-                        <span>
-                          {{- link.title | escape -}}
-                          {%- render 'icon-caret' -%}
-                        </span>
-                      </summary>
-                      <div id="MegaMenu-Content-{{ forloop.index }}" class="mega-menu__content color-scheme-1 gradient motion-reduce global-settings-popup" tabindex="-1">
-                        <ul class="mega-menu__list page-width" role="list">
-                          {%- for childlink in link.links -%}
-                            <li>
-                              <a href="{{ childlink.url }}" class="mega-menu__link mega-menu__link--level-2 link motion-reduce"{% if childlink.current %} aria-current="page"{% endif %}>
-                                {{ childlink.title | escape }}
-                              </a>
-                            </li>
-                          {%- endfor -%}
-                        </ul>
-                      </div>
-                    </details>
-                  </header-menu>
-                {%- else -%}
-                  <a href="{{ link.url }}" class="header__menu-item list-menu__item link link--text focus-inset"{% if link.current %} aria-current="page"{% endif %}>
-                    <span>
-                      {{- link.title | escape -}}
-                    </span>
-                  </a>
-                {%- endif -%}
-              </li>
-            {%- endfor -%}
-          </ul>
-        </nav>
-
-        <div class="header__icons">
-          <div class="desktop-localization-wrapper">
-            {%- if settings.enable_country_selector and localization.available_countries.size > 1 -%}
-              <localization-form>
-                {%- form 'localization', id: 'HeaderCountryForm', class: 'localization-form' -%}
-                  <div>
-                    <h2 class="visually-hidden" id="HeaderCountryLabel">{{ 'localization.country_label' | t }}</h2>
-                    {%- render 'country-localization', localPosition: 'HeaderCountry' -%}
-                  </div>
-                {%- endform -%}
-              </localization-form>
-            {% endif %}
-
-            {%- if settings.enable_language_selector and localization.available_languages.size > 1 -%}
-              <localization-form>
-                {%- form 'localization', id: 'HeaderLanguageForm', class: 'localization-form' -%}
-                  <div>
-                    <h2 class="visually-hidden" id="HeaderLanguageLabel">{{ 'localization.language_label' | t }}</h2>
-                    {%- render 'language-localization', localPosition: 'HeaderLanguage' -%}
-                  </div>
-                {%- endform -%}
-              </localization-form>
-            {%- endif -%}
-
-            {%- if shop.customer_accounts_enabled -%}
-              <a href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}" class="header__icon header__icon--account link focus-inset{% if section.settings.menu != blank %} small-hide{% endif %}">
-                {% render 'icon-account' %}
-                <span class="visually-hidden">
-                  {%- liquid
-                    if customer
-                      echo 'customer.account_fallback' | t
-                    else
-                      echo 'customer.log_in' | t
-                    endif
-                  -%}
-                </span>
-              </a>
-            {%- endif -%}
-
-            {%- for block in section.blocks -%}
-              {%- case block.type -%}
-                {%- when '@app' -%}
-                  {% render block %}
-              {%- endcase -%}
-            {%- endfor -%}
-
-            <a href="{{ routes.search_url }}" class="header__icon header__icon--search link link--text focus-inset modal__toggle" aria-haspopup="dialog" aria-label="{{ 'general.search.search' | t }}">
-              {% render 'icon-search' %}
-            </a>
-
-            <a href="{{ routes.cart_url }}" class="header__icon header__icon--cart link link--text focus-inset" id="cart-icon-bubble">
-              <div class="cart-count-bubble">
-                {%- if cart != empty -%}
-                  <span aria-hidden="true">{{ cart.item_count }}</span>
-                {%- endif -%}
-                <span class="visually-hidden">{{ 'templates.cart.cart' | t }}</span>
-                {% render 'icon-cart' %}
-              </div>
-            </a>
-          </div>
-
-          <button type="button" class="header__icon header__icon--menu header__icon--summary link focus-inset" aria-haspopup="dialog" aria-label="{{ 'general.drawer.menu' | t }}">
-            {% render 'icon-hamburger' %}
-          </button>
-        </div>
+<header class="header bg-white shadow-lg sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-16">
+      <!-- Logo -->
+      <div class="flex items-center">
+        <a href="{{ routes.root_url }}" class="text-2xl font-bold">
+          i<span class="text-electric-blue">Parts</span> Store
+        </a>
       </div>
-    </header>
 
-  {%- if settings.enable_sticky_header -%}
-    </sticky-header>
-  {%- else -%}
-    </div>
-  {%- endif -%}
-
-  <menu-drawer class="drawer drawer--left">
-    <div class="drawer__inner gradient">
-      <div class="drawer__header">
-        <div class="drawer__heading">
-          <h2 class="drawer__heading-text">{{ 'general.drawer.menu' | t }}</h2>
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex items-center space-x-8">
+        <div class="relative group">
+          <button class="text-gray-900 hover:text-electric-blue px-3 py-2 text-sm font-medium transition-colors flex items-center">
+            Productos
+            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+          <div class="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+            <div class="py-2">
+              <a href="/collections/pantallas" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Pantallas</a>
+              <a href="/collections/baterias" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Baterías</a>
+              <a href="/collections/carcasas" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Carcasas</a>
+              <a href="/collections/camaras" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Cámaras</a>
+              <a href="/collections/botones" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Botones</a>
+              <a href="/collections/altavoces" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Altavoces</a>
+            </div>
+          </div>
         </div>
-        <button type="button" class="drawer__close button-reset" aria-label="{{ 'accessibility.close' | t }}">
-          {% render 'icon-close' %}
+        <a href="/pages/contact" class="text-gray-900 hover:text-electric-blue px-3 py-2 text-sm font-medium transition-colors">
+          Contacto
+        </a>
+      </nav>
+
+      <!-- Search Bar -->
+      <div class="hidden md:flex items-center flex-1 max-w-lg mx-8">
+        <form action="{{ routes.search_url }}" method="get" class="w-full">
+          <div class="relative">
+            <input type="search" name="q" placeholder="Buscar productos..." 
+                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-electric-blue">
+            <button type="submit" class="absolute right-2 top-1/2 transform -translate-y-1/2">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Cart and Mobile Menu -->
+      <div class="flex items-center space-x-4">
+        <a href="{{ routes.cart_url }}" class="relative p-2">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l-1.5-6m0 0L4 5m3 8l1.5 6m0 0h8"></path>
+          </svg>
+          <span class="absolute -top-1 -right-1 bg-electric-blue text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+            {{ cart.item_count }}
+          </span>
+        </a>
+        
+        <!-- Mobile Menu Button -->
+        <button class="md:hidden p-2" onclick="toggleMobileMenu()">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
         </button>
       </div>
-      <div class="drawer__content">
-        <nav class="drawer__navigation">
-          <ul class="drawer__navigation-list list-unstyled" role="list">
-            {%- for link in section.settings.menu.links -%}
-              <li>
-                {%- if link.links != blank -%}
-                  <details id="Details-menu-drawer-menu-item-{{ forloop.index }}">
-                    <summary id="HeaderDrawer-{{ link.handle }}" class="header__menu-item list-menu__item link link--text focus-inset h5 medium-hide large-up-hide">
-                      {{ link.title | escape }}
-                      {% render 'icon-caret' %}
-                    </summary>
-                    <div id="link-{{ link.handle | escape }}" class="header__submenu has-submenu gradient motion-reduce" tabindex="-1">
-                      <div class="header__submenu-inner">
-                        <button type="button" class="header__submenu-close link link--text focus-inset" aria-expanded="true">
-                          {% render 'icon-arrow' %}
-                          {{ link.title | escape }}
-                        </button>
-                        <ul class="header__submenu-list list-unstyled" role="list" tabindex="-1">
-                          {%- for childlink in link.links -%}
-                            <li>
-                              <a href="{{ childlink.url }}" class="header__menu-item list-menu__item link link--text focus-inset caption-large"{% if childlink.current %} aria-current="page"{% endif %}>
-                                {{ childlink.title | escape }}
-                              </a>
-                            </li>
-                          {%- endfor -%}
-                        </ul>
-                      </div>
-                    </div>
-                  </details>
-                {%- else -%}
-                  <a href="{{ link.url }}" class="header__menu-item list-menu__item link link--text focus-inset h5"{% if link.current %} aria-current="page"{% endif %}>
-                    {{ link.title | escape }}
-                  </a>
-                {%- endif -%}
-              </li>
-            {%- endfor -%}
-          </ul>
-        </nav>
-        <div class="drawer__localization">
-          {%- if settings.enable_country_selector and localization.available_countries.size > 1 -%}
-            <localization-form>
-              {%- form 'localization', id: 'HeaderCountryMobileForm', class: 'localization-form' -%}
-                <div>
-                  <h2 class="visually-hidden" id="HeaderCountryMobileLabel">{{ 'localization.country_label' | t }}</h2>
-                  {%- render 'country-localization', localPosition: 'HeaderCountryMobile' -%}
-                </div>
-              {%- endform -%}
-            </localization-form>
-          {% endif %}
+    </div>
 
-          {%- if settings.enable_language_selector and localization.available_languages.size > 1 -%}
-            <localization-form>
-              {%- form 'localization', id: 'HeaderLanguageMobileForm', class: 'localization-form' -%}
-                <div>
-                  <h2 class="visually-hidden" id="HeaderLanguageMobileLabel">{{ 'localization.language_label' | t }}</h2>
-                  {%- render 'language-localization', localPosition: 'HeaderLanguageMobile' -%}
-                </div>
-              {%- endform -%}
-            </localization-form>
-          {%- endif -%}
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="md:hidden hidden bg-white border-t">
+      <div class="px-4 py-4 space-y-2">
+        <div class="mb-4">
+          <input type="search" placeholder="Buscar productos..." 
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg">
         </div>
-        <ul class="drawer__utility-links list-unstyled">
-          {%- if shop.customer_accounts_enabled -%}
-            <li>
-              <a href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}" class="drawer__utility-link link link--text focus-inset h5 medium-hide large-up-hide">
-                {% render 'icon-account' %}
-                {%- liquid
-                  if customer
-                    echo 'customer.account_fallback' | t
-                  else
-                    echo 'customer.log_in' | t
-                  endif
-                -%}
-              </a>
-            </li>
-          {%- endif -%}
-        </ul>
+        <a href="/collections/pantallas" class="block py-2 text-gray-700">Pantallas</a>
+        <a href="/collections/baterias" class="block py-2 text-gray-700">Baterías</a>
+        <a href="/collections/carcasas" class="block py-2 text-gray-700">Carcasas</a>
+        <a href="/collections/camaras" class="block py-2 text-gray-700">Cámaras</a>
+        <a href="/collections/botones" class="block py-2 text-gray-700">Botones</a>
+        <a href="/collections/altavoces" class="block py-2 text-gray-700">Altavoces</a>
+        <a href="/pages/contact" class="block py-2 text-gray-700">Contacto</a>
       </div>
     </div>
-  </menu-drawer>
+  </div>
 </header>
-
-{% schema %}
-{
-  "name": "t:sections.header.name",
-  "class": "section-header",
-  "max_blocks": 3,
-  "settings": [
-    {
-      "type": "image_picker",
-      "id": "logo",
-      "label": "t:sections.header.settings.logo.label"
-    },
-    {
-      "type": "range",
-      "id": "logo_width",
-      "min": 50,
-      "max": 250,
-      "step": 10,
-      "default": 100,
-      "unit": "t:sections.header.settings.logo_width.unit",
-      "label": "t:sections.header.settings.logo_width.label"
-    },
-    {
-      "type": "link_list",
-      "id": "menu",
-      "default": "main-menu",
-      "label": "t:sections.header.settings.menu.label"
-    },
-    {
-      "type": "select",
-      "id": "menu_type_desktop",
-      "options": [
-        {
-          "value": "dropdown",
-          "label": "t:sections.header.settings.menu_type_desktop.options__1.label"
-        },
-        {
-          "value": "mega",
-          "label": "t:sections.header.settings.menu_type_desktop.options__2.label"
-        },
-        {
-          "value": "drawer",
-          "label": "t:sections.header.settings.menu_type_desktop.options__3.label"
-        }
-      ],
-      "default": "dropdown",
-      "label": "t:sections.header.settings.menu_type_desktop.label",
-      "info": "t:sections.header.settings.menu_type_desktop.info"
-    },
-    {
-      "type": "select",
-      "id": "sticky_header_type",
-      "options": [
-        {
-          "value": "none",
-          "label": "t:sections.header.settings.sticky_header_type.options__1.label"
-        },
-        {
-          "value": "on-scroll-up",
-          "label": "t:sections.header.settings.sticky_header_type.options__2.label"
-        },
-        {
-          "value": "always",
-          "label": "t:sections.header.settings.sticky_header_type.options__3.label"
-        },
-        {
-          "value": "reduce-logo-size",
-          "label": "t:sections.header.settings.sticky_header_type.options__4.label"
-        }
-      ],
-      "default": "on-scroll-up",
-      "label": "t:sections.header.settings.sticky_header_type.label"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_line_separator",
-      "default": true,
-      "label": "t:sections.header.settings.show_line_separator.label"
-    },
-    {
-      "type": "color_scheme",
-      "id": "color_scheme",
-      "label": "t:sections.all.colors.label",
-      "default": "scheme-1"
-    },
-    {
-      "type": "checkbox",
-      "id": "enable_country_selector",
-      "default": true,
-      "label": "t:sections.header.settings.enable_country_selector.label"
-    },
-    {
-      "type": "checkbox",
-      "id": "enable_language_selector",
-      "default": true,
-      "label": "t:sections.header.settings.enable_language_selector.label"
-    },
-    {
-      "type": "header",
-      "content": "t:sections.header.settings.mobile_layout.content"
-    },
-    {
-      "type": "select",
-      "id": "mobile_logo_position",
-      "default": "center",
-      "label": "t:sections.header.settings.mobile_logo_position.label",
-      "options": [
-        {
-          "value": "center",
-          "label": "t:sections.header.settings.mobile_logo_position.options__1.label"
-        },
-        {
-          "value": "left",
-          "label": "t:sections.header.settings.mobile_logo_position.options__2.label"
-        }
-      ]
-    },
-    {
-      "type": "header",
-      "content": "t:sections.header.settings.header_search.content"
-    },
-    {
-      "type": "checkbox",
-      "id": "enable_predictive_search",
-      "default": true,
-      "label": "t:sections.header.settings.enable_predictive_search.label"
-    }
-  ],
-  "blocks": [
-    {
-      "type": "@app"
-    }
-  ]
-}
-{% endschema %}
