@@ -1,93 +1,195 @@
 
-<!-- Promo Banner -->
-<div class="promo-banner bg-electric-blue text-white text-center py-2">
-  <p class="text-sm">🚚 Envío GRATIS en pedidos mayores a $500 MXN | ⚡ Entrega en 24-48hrs</p>
+<!-- Modern Promo Banner -->
+<div class="promo-banner">
+  <div class="container">
+    <p class="text-sm font-medium">🚚 Envío GRATIS en pedidos mayores a $500 MXN | ⚡ Entrega en 24-48hrs</p>
+  </div>
 </div>
 
-<header class="header bg-white shadow-lg sticky top-0 z-50">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between items-center h-16">
-      <!-- Logo -->
+<header class="header">
+  <div class="container">
+    <div class="flex justify-between items-center py-4">
+      <!-- Modern Logo -->
       <div class="flex items-center">
-        <a href="{{ routes.root_url }}" class="text-2xl font-bold">
-          i<span class="text-electric-blue">Parts</span> Store
+        <a href="{{ routes.root_url }}" class="flex items-center space-x-2 transition-transform hover:scale-105">
+          <div class="w-10 h-10 bg-electric-blue rounded-xl flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+            </svg>
+          </div>
+          <span class="text-2xl font-bold text-neutral-900">
+            i<span class="text-electric-blue">Parts</span> Store
+          </span>
         </a>
       </div>
 
       <!-- Desktop Navigation -->
       <nav class="hidden md:flex items-center space-x-8">
         <div class="relative group">
-          <button class="text-gray-900 hover:text-electric-blue px-3 py-2 text-sm font-medium transition-colors flex items-center">
-            Productos
-            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <button class="flex items-center space-x-1 text-neutral-700 hover:text-electric-blue px-4 py-2 text-base font-medium transition-colors rounded-lg hover:bg-neutral-50">
+            <span>Productos</span>
+            <svg class="w-4 h-4 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
             </svg>
           </button>
-          <div class="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-            <div class="py-2">
-              <a href="/collections/pantallas" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Pantallas</a>
-              <a href="/collections/baterias" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Baterías</a>
-              <a href="/collections/carcasas" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Carcasas</a>
-              <a href="/collections/camaras" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Cámaras</a>
-              <a href="/collections/botones" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Botones</a>
-              <a href="/collections/altavoces" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Altavoces</a>
+          <div class="absolute top-full left-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-neutral-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+            <div class="p-2">
+              <a href="/collections/pantallas" class="flex items-center space-x-3 px-4 py-3 text-neutral-700 hover:text-electric-blue hover:bg-neutral-50 rounded-lg transition-colors">
+                <div class="w-8 h-8 bg-electric-blue-light rounded-lg flex items-center justify-center">
+                  <svg class="w-4 h-4 text-electric-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                  </svg>
+                </div>
+                <span class="font-medium">Pantallas</span>
+              </a>
+              <a href="/collections/baterias" class="flex items-center space-x-3 px-4 py-3 text-neutral-700 hover:text-electric-blue hover:bg-neutral-50 rounded-lg transition-colors">
+                <div class="w-8 h-8 bg-electric-blue-light rounded-lg flex items-center justify-center">
+                  <svg class="w-4 h-4 text-electric-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3l18 18M9 9v10h4V9M3 9h10v10H3z"/>
+                  </svg>
+                </div>
+                <span class="font-medium">Baterías</span>
+              </a>
+              <a href="/collections/carcasas" class="flex items-center space-x-3 px-4 py-3 text-neutral-700 hover:text-electric-blue hover:bg-neutral-50 rounded-lg transition-colors">
+                <div class="w-8 h-8 bg-electric-blue-light rounded-lg flex items-center justify-center">
+                  <svg class="w-4 h-4 text-electric-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                  </svg>
+                </div>
+                <span class="font-medium">Carcasas</span>
+              </a>
+              <a href="/collections/camaras" class="flex items-center space-x-3 px-4 py-3 text-neutral-700 hover:text-electric-blue hover:bg-neutral-50 rounded-lg transition-colors">
+                <div class="w-8 h-8 bg-electric-blue-light rounded-lg flex items-center justify-center">
+                  <svg class="w-4 h-4 text-electric-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                  </svg>
+                </div>
+                <span class="font-medium">Cámaras</span>
+              </a>
+              <a href="/collections/botones" class="flex items-center space-x-3 px-4 py-3 text-neutral-700 hover:text-electric-blue hover:bg-neutral-50 rounded-lg transition-colors">
+                <div class="w-8 h-8 bg-electric-blue-light rounded-lg flex items-center justify-center">
+                  <svg class="w-4 h-4 text-electric-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+                </div>
+                <span class="font-medium">Botones</span>
+              </a>
+              <a href="/collections/altavoces" class="flex items-center space-x-3 px-4 py-3 text-neutral-700 hover:text-electric-blue hover:bg-neutral-50 rounded-lg transition-colors">
+                <div class="w-8 h-8 bg-electric-blue-light rounded-lg flex items-center justify-center">
+                  <svg class="w-4 h-4 text-electric-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728"/>
+                  </svg>
+                </div>
+                <span class="font-medium">Altavoces</span>
+              </a>
             </div>
           </div>
         </div>
-        <a href="/pages/contact" class="text-gray-900 hover:text-electric-blue px-3 py-2 text-sm font-medium transition-colors">
+        <a href="/pages/contact" class="text-neutral-700 hover:text-electric-blue px-4 py-2 text-base font-medium transition-colors rounded-lg hover:bg-neutral-50">
           Contacto
         </a>
       </nav>
 
-      <!-- Search Bar -->
+      <!-- Modern Search Bar -->
       <div class="hidden md:flex items-center flex-1 max-w-lg mx-8">
         <form action="{{ routes.search_url }}" method="get" class="w-full">
           <div class="relative">
             <input type="search" name="q" placeholder="Buscar productos..." 
-                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-electric-blue">
-            <button type="submit" class="absolute right-2 top-1/2 transform -translate-y-1/2">
-              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   class="w-full pl-12 pr-4 py-3 bg-neutral-50 border-2 border-neutral-200 rounded-xl focus:bg-white focus:border-electric-blue focus:outline-none transition-all text-base">
+            <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
+              <svg class="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
               </svg>
-            </button>
+            </div>
           </div>
         </form>
       </div>
 
       <!-- Cart and Mobile Menu -->
       <div class="flex items-center space-x-4">
-        <a href="{{ routes.cart_url }}" class="relative p-2">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- Modern Cart Button -->
+        <a href="{{ routes.cart_url }}" class="relative p-3 bg-neutral-50 hover:bg-neutral-100 rounded-xl transition-colors group">
+          <svg class="w-6 h-6 text-neutral-700 group-hover:text-electric-blue transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l-1.5-6m0 0L4 5m3 8l1.5 6m0 0h8"></path>
           </svg>
-          <span class="absolute -top-1 -right-1 bg-electric-blue text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-            {{ cart.item_count }}
-          </span>
+          {% if cart.item_count > 0 %}
+            <span class="absolute -top-2 -right-2 bg-electric-blue text-white text-xs font-semibold rounded-full h-6 w-6 flex items-center justify-center animate-pulse">
+              {{ cart.item_count }}
+            </span>
+          {% endif %}
         </a>
         
-        <!-- Mobile Menu Button -->
-        <button class="md:hidden p-2" onclick="toggleMobileMenu()">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- Modern Mobile Menu Button -->
+        <button class="md:hidden p-3 bg-neutral-50 hover:bg-neutral-100 rounded-xl transition-colors" onclick="toggleMobileMenu()">
+          <svg class="w-6 h-6 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
           </svg>
         </button>
       </div>
     </div>
 
-    <!-- Mobile Menu -->
-    <div id="mobile-menu" class="md:hidden hidden bg-white border-t">
-      <div class="px-4 py-4 space-y-2">
-        <div class="mb-4">
-          <input type="search" placeholder="Buscar productos..." 
-                 class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+    <!-- Modern Mobile Menu -->
+    <div id="mobile-menu" class="md:hidden hidden bg-white border-t border-neutral-200 rounded-b-xl">
+      <div class="p-6 space-y-4">
+        <!-- Mobile Search -->
+        <div class="mb-6">
+          <form action="{{ routes.search_url }}" method="get">
+            <div class="relative">
+              <input type="search" name="q" placeholder="Buscar productos..." 
+                     class="w-full pl-12 pr-4 py-3 bg-neutral-50 border-2 border-neutral-200 rounded-xl focus:bg-white focus:border-electric-blue focus:outline-none transition-all">
+              <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
+                <svg class="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+              </div>
+            </div>
+          </form>
         </div>
-        <a href="/collections/pantallas" class="block py-2 text-gray-700">Pantallas</a>
-        <a href="/collections/baterias" class="block py-2 text-gray-700">Baterías</a>
-        <a href="/collections/carcasas" class="block py-2 text-gray-700">Carcasas</a>
-        <a href="/collections/camaras" class="block py-2 text-gray-700">Cámaras</a>
-        <a href="/collections/botones" class="block py-2 text-gray-700">Botones</a>
-        <a href="/collections/altavoces" class="block py-2 text-gray-700">Altavoces</a>
-        <a href="/pages/contact" class="block py-2 text-gray-700">Contacto</a>
+        <!-- Mobile Navigation Links -->
+        <div class="space-y-2">
+          <a href="/collections/pantallas" class="flex items-center space-x-3 p-3 text-neutral-700 hover:text-electric-blue hover:bg-neutral-50 rounded-lg transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+            <span class="font-medium">Pantallas</span>
+          </a>
+          <a href="/collections/baterias" class="flex items-center space-x-3 p-3 text-neutral-700 hover:text-electric-blue hover:bg-neutral-50 rounded-lg transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3l18 18M9 9v10h4V9M3 9h10v10H3z"/>
+            </svg>
+            <span class="font-medium">Baterías</span>
+          </a>
+          <a href="/collections/carcasas" class="flex items-center space-x-3 p-3 text-neutral-700 hover:text-electric-blue hover:bg-neutral-50 rounded-lg transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+            </svg>
+            <span class="font-medium">Carcasas</span>
+          </a>
+          <a href="/collections/camaras" class="flex items-center space-x-3 p-3 text-neutral-700 hover:text-electric-blue hover:bg-neutral-50 rounded-lg transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+            </svg>
+            <span class="font-medium">Cámaras</span>
+          </a>
+          <a href="/collections/botones" class="flex items-center space-x-3 p-3 text-neutral-700 hover:text-electric-blue hover:bg-neutral-50 rounded-lg transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            <span class="font-medium">Botones</span>
+          </a>
+          <a href="/collections/altavoces" class="flex items-center space-x-3 p-3 text-neutral-700 hover:text-electric-blue hover:bg-neutral-50 rounded-lg transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728"/>
+            </svg>
+            <span class="font-medium">Altavoces</span>
+          </a>
+          <a href="/pages/contact" class="flex items-center space-x-3 p-3 text-neutral-700 hover:text-electric-blue hover:bg-neutral-50 rounded-lg transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+            <span class="font-medium">Contacto</span>
+          </a>
+        </div>
       </div>
     </div>
   </div>
