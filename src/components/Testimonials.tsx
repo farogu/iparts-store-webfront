@@ -5,27 +5,24 @@ const Testimonials = () => {
   const testimonials = [
     {
       id: 1,
-      name: 'María González',
-      role: 'Cliente Verificada',
-      content: 'Excelente calidad en las piezas. Mi iPhone quedó como nuevo después de cambiar la pantalla. Servicio rápido y profesional.',
-      rating: 5,
-      image: 'https://images.unsplash.com/photo-1494790108755-2616b612b5bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80'
+      name: 'Carlos R.',
+      role: 'Cliente Verificado (CDMX)',
+      content: 'Pedí una pantalla para iPhone 13 y llegó súper rápido. La calidad es excelente, igualita a la original. Muy buena atención también.',
+      rating: 5
     },
     {
       id: 2,
-      name: 'Carlos Ruiz',
-      role: 'Técnico en Reparaciones',
-      content: 'Como técnico, puedo confirmar que las piezas de iParts Store son de primera calidad. Siempre tienen stock y envío rápido.',
-      rating: 5,
-      image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80'
+      name: 'Andrea G.',
+      role: 'Cliente Verificada (Guadalajara)',
+      content: 'Tenía dudas sobre qué pieza era compatible con mi iPhone SE y me ayudaron por WhatsApp. Excelente servicio y buenos precios.',
+      rating: 5
     },
     {
       id: 3,
-      name: 'Ana Martínez',
-      role: 'Cliente Frecuente',
-      content: 'He comprado varias veces aquí y siempre recibo productos originales. La atención al cliente es excepcional.',
-      rating: 5,
-      image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80'
+      name: 'Luis M.',
+      role: 'Técnico en Reparaciones (Monterrey)',
+      content: 'He comprado varias veces piezas como baterías y conectores. Todo ha funcionado perfecto. Lo recomiendo para técnicos.',
+      rating: 5
     }
   ];
 
@@ -64,16 +61,9 @@ const Testimonials = () => {
                 <blockquote className="text-gray-700 mb-6 text-lg leading-relaxed">
                   "{testimonial.content}"
                 </blockquote>
-                <div className="flex items-center">
-                  <img 
-                    src={testimonial.image} 
-                    alt={testimonial.name}
-                    className="w-12 h-12 rounded-full object-cover mr-4"
-                  />
-                  <div>
-                    <div className="font-semibold text-gray-900">{testimonial.name}</div>
-                    <div className="text-sm text-gray-600">{testimonial.role}</div>
-                  </div>
+                <div className="text-left">
+                  <div className="font-semibold text-gray-900">{testimonial.name}</div>
+                  <div className="text-sm text-gray-600">{testimonial.role}</div>
                 </div>
               </CardContent>
             </Card>
