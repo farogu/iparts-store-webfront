@@ -1,50 +1,330 @@
 
-<div class="max-w-7xl mx-auto px-4 py-8">
+<div class="collection-page page-width">
   <!-- Collection Header -->
-  <div class="text-center mb-12">
-    <h1 class="text-3xl font-bold text-gray-900 mb-4">{{ collection.title }}</h1>
+  <div class="collection-header text-center">
+    <h1 class="collection-title h0">{{ collection.title }}</h1>
     {% if collection.description != blank %}
-      <p class="text-gray-600">{{ collection.description }}</p>
+      <div class="collection-description rte">
+        {{ collection.description }}
+      </div>
     {% endif %}
   </div>
 
-  <!-- Products Grid -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-    {% for product in collection.products %}
-      <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg">
-        <a href="{{ product.url }}">
-          {% if product.featured_image %}
-            <img src="{{ product.featured_image | img_url: '300x300' }}" 
-                 alt="{{ product.title }}" 
-                 class="w-full h-48 object-cover">
-          {% else %}
-            <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
-              <span class="text-gray-400">Sin imagen</span>
-            </div>
-          {% endif %}
-          
-          <div class="p-4">
-            <h3 class="font-semibold text-gray-900 mb-2">{{ product.title }}</h3>
-            <p class="text-blue-600 font-bold">${{ product.price | money_without_currency }}</p>
-            
-            {% if product.available %}
-              <span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full mt-2">
-                Disponible
-              </span>
-            {% else %}
-              <span class="inline-block bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full mt-2">
-                Agotado
-              </span>
-            {% endif %}
-          </div>
-        </a>
+  <!-- Filters and Sorting -->
+  <div class="collection-filters">
+    <div class="filter-bar">
+      <div class="filter-left">
+        <span class="results-count">
+          {{ collection.products_count }} 
+          {%- if collection.products_count == 1 -%}
+            producto
+          {%- else -%}
+            productos
+          {%- endif -%}
+        </span>
       </div>
-    {% endfor %}
+      
+      <div class="filter-right">
+        <div class="sort-dropdown">
+          <select id="sort-select" onchange="sortProducts(this.value)">
+            <option value="manual">Destacados</option>
+            <option value="best-selling">Más vendidos</option>
+            <option value="title-ascending">A-Z</option>
+            <option value="title-descending">Z-A</option>
+            <option value="price-ascending">Precio menor a mayor</option>
+            <option value="price-descending">Precio mayor a menor</option>
+            <option value="created-ascending">Más antiguos</option>
+            <option value="created-descending">Más recientes</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Products Grid -->
+  <div class="products-grid" id="collection-products">
+    {% paginate collection.products by 24 %}
+      <div class="product-grid">
+        {% for product in collection.products %}
+          <div class="product-card" data-product-id="{{ product.id }}">
+            <a href="{{ product.url }}" class="product-card-link">
+              {% if product.featured_image %}
+                {{ product.featured_image | image_url: width: 400 | image_tag: 
+                  alt: product.title,
+                  class: 'product-image',
+                  loading: 'lazy'
+                }}
+              {% else %}
+                <div class="product-image-placeholder">
+                  <span>Sin imagen</span>
+                </div>
+              {% endif %}
+              
+              <div class="product-info">
+                <h3 class="product-title h5">{{ product.title }}</h3>
+                <div class="product-price">
+                  <span class="price">{{ product.price | money }}</span>
+                  {% if product.compare_at_price > product.price %}
+                    <span class="compare-at-price">{{ product.compare_at_price | money }}</span>
+                  {% endif %}
+                </div>
+                
+                {% if product.available %}
+                  <span class="availability available">Disponible</span>
+                {% else %}
+                  <span class="availability unavailable">Agotado</span>
+                {% endif %}
+              </div>
+            </a>
+            
+            <!-- Quick Add Button -->
+            {% unless product.has_only_default_variant %}
+              <div class="quick-add-wrapper">
+                <button type="button" class="quick-add-button button button--secondary" 
+                        onclick="openQuickView('{{ product.handle }}')">
+                  Opciones
+                </button>
+              </div>
+            {% else %}
+              {% form 'product', product, id: product.id, class: 'product-form' %}
+                <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+                <div class="quick-add-wrapper">
+                  <button type="submit" class="quick-add-button button button--primary" 
+                          {% unless product.available %}disabled{% endunless %}>
+                    {% if product.available %}
+                      Agregar al carrito
+                    {% else %}
+                      Agotado
+                    {% endif %}
+                  </button>
+                </div>
+              {% endform %}
+            {% endunless %}
+          </div>
+        {% endfor %}
+      </div>
+
+      {% if paginate.pages > 1 %}
+        <div class="pagination-wrapper">
+          {{ paginate | default_pagination }}
+        </div>
+      {% endif %}
+    {% endpaginate %}
   </div>
 
   {% if collection.products.size == 0 %}
-    <div class="text-center py-12">
-      <p class="text-gray-500">No hay productos en esta colección.</p>
+    <div class="empty-state text-center">
+      <h3 class="h3">No hay productos en esta colección</h3>
+      <p>Revisa otras colecciones o vuelve más tarde.</p>
+      <a href="{{ routes.collections_url }}" class="button button--primary">
+        Ver todas las colecciones
+      </a>
     </div>
   {% endif %}
 </div>
+
+<style>
+  .collection-page {
+    padding: 4rem 0;
+  }
+
+  .collection-header {
+    margin-bottom: 4rem;
+  }
+
+  .collection-title {
+    margin-bottom: 1.5rem;
+    color: #1f2937;
+  }
+
+  .collection-description {
+    color: #6b7280;
+    font-size: 1.6rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .collection-filters {
+    margin-bottom: 3rem;
+  }
+
+  .filter-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .results-count {
+    font-weight: 600;
+    color: #374151;
+  }
+
+  .sort-dropdown select {
+    padding: 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: white;
+    font-size: 1.4rem;
+    min-width: 200px;
+  }
+
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2.5rem;
+  }
+
+  .product-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .product-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  .product-image {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+  }
+
+  .product-image-placeholder {
+    width: 100%;
+    height: 240px;
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9ca3af;
+  }
+
+  .product-info {
+    padding: 2rem;
+  }
+
+  .product-title {
+    margin-bottom: 1rem;
+    color: #1f2937;
+  }
+
+  .product-price {
+    margin-bottom: 1rem;
+  }
+
+  .price {
+    font-weight: 700;
+    color: var(--electric-blue);
+    font-size: 1.8rem;
+  }
+
+  .compare-at-price {
+    text-decoration: line-through;
+    color: #6b7280;
+    margin-left: 1rem;
+  }
+
+  .availability {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+
+  .availability.available {
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  .availability.unavailable {
+    background: #fef2f2;
+    color: #dc2626;
+  }
+
+  .quick-add-wrapper {
+    padding: 0 2rem 2rem;
+  }
+
+  .quick-add-button {
+    width: 100%;
+    padding: 1.2rem;
+  }
+
+  .pagination-wrapper {
+    margin-top: 4rem;
+    text-align: center;
+  }
+
+  .empty-state {
+    padding: 6rem 2rem;
+  }
+
+  .empty-state h3 {
+    margin-bottom: 1rem;
+    color: #374151;
+  }
+
+  .empty-state p {
+    margin-bottom: 2rem;
+    color: #6b7280;
+  }
+
+  @media screen and (max-width: 749px) {
+    .collection-page {
+      padding: 2rem 0;
+    }
+
+    .filter-bar {
+      flex-direction: column;
+      gap: 1.5rem;
+      align-items: stretch;
+    }
+
+    .sort-dropdown select {
+      min-width: auto;
+      width: 100%;
+    }
+
+    .product-grid {
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 2rem;
+    }
+  }
+</style>
+
+<script>
+  function sortProducts(sortValue) {
+    const url = new URL(window.location);
+    url.searchParams.set('sort_by', sortValue);
+    window.location.href = url.toString();
+  }
+
+  function openQuickView(handle) {
+    window.location.href = `/products/${handle}`;
+  }
+
+  // Initialize sort dropdown with current value
+  document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const sortBy = urlParams.get('sort_by');
+    if (sortBy) {
+      document.getElementById('sort-select').value = sortBy;
+    }
+  });
+</script>

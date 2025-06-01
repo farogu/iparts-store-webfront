@@ -1,0 +1,506 @@
+
+<footer class="footer color-scheme-1 gradient section-footer" role="contentinfo">
+  <div class="footer-wrapper page-width">
+    <div class="footer-content">
+      <div class="footer-blocks">
+        <!-- Company Info -->
+        <div class="footer-block footer-block--info">
+          <h3 class="footer-heading h4">{{ shop.name }}</h3>
+          <div class="footer-block-details">
+            <p class="footer-description">
+              Especialistas en repuestos iPhone de calidad premium. 
+              Encuentra las mejores piezas para tu dispositivo con garantía completa.
+            </p>
+            <div class="footer-contact">
+              <p>📍 Ciudad de México, México</p>
+              <p>📞 +52 55 1234 5678</p>
+              <p>✉️ contacto@ipartsstore.com</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="footer-block footer-block--links">
+          <h3 class="footer-heading h5">Enlaces Rápidos</h3>
+          <ul class="footer-list list-unstyled">
+            <li class="footer-list-item">
+              <a href="{{ routes.collections_url }}" class="footer-link link">
+                Todos los Productos
+              </a>
+            </li>
+            <li class="footer-list-item">
+              <a href="/pages/about" class="footer-link link">
+                Acerca de Nosotros
+              </a>
+            </li>
+            <li class="footer-list-item">
+              <a href="/pages/contact" class="footer-link link">
+                Contacto
+              </a>
+            </li>
+            <li class="footer-list-item">
+              <a href="/pages/shipping" class="footer-link link">
+                Envíos
+              </a>
+            </li>
+            <li class="footer-list-item">
+              <a href="/pages/returns" class="footer-link link">
+                Devoluciones
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Product Categories -->
+        <div class="footer-block footer-block--categories">
+          <h3 class="footer-heading h5">Categorías</h3>
+          <ul class="footer-list list-unstyled">
+            <li class="footer-list-item">
+              <a href="/collections/pantallas" class="footer-link link">
+                Pantallas
+              </a>
+            </li>
+            <li class="footer-list-item">
+              <a href="/collections/baterias" class="footer-link link">
+                Baterías
+              </a>
+            </li>
+            <li class="footer-list-item">
+              <a href="/collections/camaras" class="footer-link link">
+                Cámaras
+              </a>
+            </li>
+            <li class="footer-list-item">
+              <a href="/collections/altavoces" class="footer-link link">
+                Altavoces
+              </a>
+            </li>
+            <li class="footer-list-item">
+              <a href="/collections/flex" class="footer-link link">
+                Flex de Carga
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Customer Service -->
+        <div class="footer-block footer-block--service">
+          <h3 class="footer-heading h5">Atención al Cliente</h3>
+          <ul class="footer-list list-unstyled">
+            <li class="footer-list-item">
+              <a href="/pages/faq" class="footer-link link">
+                Preguntas Frecuentes
+              </a>
+            </li>
+            <li class="footer-list-item">
+              <a href="/pages/warranty" class="footer-link link">
+                Garantía
+              </a>
+            </li>
+            <li class="footer-list-item">
+              <a href="/pages/installation" class="footer-link link">
+                Guías de Instalación
+              </a>
+            </li>
+            <li class="footer-list-item">
+              <a href="/pages/support" class="footer-link link">
+                Soporte Técnico
+              </a>
+            </li>
+            <li class="footer-list-item">
+              <a href="/account" class="footer-link link">
+                Mi Cuenta
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Newsletter Signup -->
+      <div class="footer-newsletter">
+        <div class="newsletter-content">
+          <h3 class="newsletter-heading h4">Mantente Informado</h3>
+          <p class="newsletter-description">
+            Recibe ofertas especiales y novedades directamente en tu email
+          </p>
+          <div class="newsletter-form">
+            {% form 'customer', class: 'newsletter-form-wrapper' %}
+              <div class="newsletter-input-wrapper">
+                <input type="email" 
+                       name="contact[email]" 
+                       placeholder="Tu email" 
+                       class="newsletter-input"
+                       required>
+                <button type="submit" class="newsletter-button button button--primary">
+                  Suscribirse
+                </button>
+              </div>
+            {% endform %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Social Media -->
+      <div class="footer-social">
+        <h4 class="social-heading h5">Síguenos</h4>
+        <div class="social-links">
+          {% if settings.social_facebook_link != blank %}
+            <a href="{{ settings.social_facebook_link }}" 
+               class="social-link" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               aria-label="Facebook">
+              {% render 'icon-facebook' %}
+            </a>
+          {% endif %}
+          
+          {% if settings.social_instagram_link != blank %}
+            <a href="{{ settings.social_instagram_link }}" 
+               class="social-link" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               aria-label="Instagram">
+              {% render 'icon-instagram' %}
+            </a>
+          {% endif %}
+          
+          {% if settings.social_twitter_link != blank %}
+            <a href="{{ settings.social_twitter_link }}" 
+               class="social-link" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               aria-label="Twitter">
+              {% render 'icon-twitter' %}
+            </a>
+          {% endif %}
+          
+          {% if settings.social_youtube_link != blank %}
+            <a href="{{ settings.social_youtube_link }}" 
+               class="social-link" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               aria-label="YouTube">
+              {% render 'icon-youtube' %}
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Bottom -->
+    <div class="footer-bottom">
+      <div class="footer-bottom-content">
+        <div class="footer-copyright">
+          <p>&copy; {{ 'now' | date: "%Y" }} {{ shop.name }}. Todos los derechos reservados.</p>
+        </div>
+        
+        <div class="footer-policies">
+          <a href="/policies/privacy-policy" class="footer-policy-link link">
+            Política de Privacidad
+          </a>
+          <span class="footer-divider">|</span>
+          <a href="/policies/terms-of-service" class="footer-policy-link link">
+            Términos de Servicio
+          </a>
+          <span class="footer-divider">|</span>
+          <a href="/policies/refund-policy" class="footer-policy-link link">
+            Política de Reembolsos
+          </a>
+        </div>
+
+        <div class="footer-payment">
+          <span class="payment-text">Métodos de pago seguros</span>
+          <div class="payment-icons">
+            <span class="payment-icon">💳</span>
+            <span class="payment-icon">🏦</span>
+            <span class="payment-icon">📱</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    margin-top: 6rem;
+    background: #1f2937;
+    color: white;
+  }
+
+  .footer-wrapper {
+    padding: 6rem 0 2rem;
+  }
+
+  .footer-content {
+    margin-bottom: 4rem;
+  }
+
+  .footer-blocks {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 4rem;
+    margin-bottom: 4rem;
+  }
+
+  .footer-block--info {
+    grid-column: span 2;
+  }
+
+  .footer-heading {
+    margin-bottom: 2rem;
+    color: white;
+  }
+
+  .footer-description {
+    margin-bottom: 2rem;
+    color: #d1d5db;
+    line-height: 1.7;
+  }
+
+  .footer-contact p {
+    margin-bottom: 0.8rem;
+    color: #d1d5db;
+  }
+
+  .footer-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .footer-link {
+    color: #d1d5db;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .footer-link:hover {
+    color: var(--electric-blue);
+  }
+
+  .footer-newsletter {
+    background: #374151;
+    padding: 3rem;
+    border-radius: 12px;
+    margin-bottom: 4rem;
+  }
+
+  .newsletter-heading {
+    margin-bottom: 1rem;
+    color: white;
+  }
+
+  .newsletter-description {
+    margin-bottom: 2rem;
+    color: #d1d5db;
+  }
+
+  .newsletter-input-wrapper {
+    display: flex;
+    gap: 1rem;
+    max-width: 400px;
+  }
+
+  .newsletter-input {
+    flex: 1;
+    padding: 1.2rem;
+    border: 1px solid #6b7280;
+    border-radius: 6px;
+    background: white;
+    font-size: 1.4rem;
+  }
+
+  .newsletter-button {
+    white-space: nowrap;
+  }
+
+  .footer-social {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .social-heading {
+    margin-bottom: 2rem;
+    color: white;
+  }
+
+  .social-links {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+  }
+
+  .social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 4rem;
+    height: 4rem;
+    background: #374151;
+    border-radius: 50%;
+    color: #d1d5db;
+    transition: all 0.3s ease;
+  }
+
+  .social-link:hover {
+    background: var(--electric-blue);
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  .footer-bottom {
+    border-top: 1px solid #374151;
+    padding-top: 3rem;
+  }
+
+  .footer-bottom-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+
+  .footer-copyright {
+    color: #9ca3af;
+  }
+
+  .footer-policies {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .footer-policy-link {
+    color: #9ca3af;
+    text-decoration: none;
+    font-size: 1.3rem;
+  }
+
+  .footer-policy-link:hover {
+    color: var(--electric-blue);
+  }
+
+  .footer-divider {
+    color: #6b7280;
+  }
+
+  .footer-payment {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .payment-text {
+    color: #9ca3af;
+    font-size: 1.3rem;
+  }
+
+  .payment-icons {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .payment-icon {
+    font-size: 2rem;
+  }
+
+  @media screen and (max-width: 989px) {
+    .footer-blocks {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 3rem;
+    }
+
+    .footer-block--info {
+      grid-column: span 2;
+    }
+
+    .newsletter-input-wrapper {
+      flex-direction: column;
+      max-width: none;
+    }
+
+    .footer-bottom-content {
+      flex-direction: column;
+      text-align: center;
+      gap: 2rem;
+    }
+
+    .footer-policies {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .footer-blocks {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .footer-block--info {
+      grid-column: span 1;
+    }
+
+    .footer-wrapper {
+      padding: 4rem 0 2rem;
+    }
+
+    .newsletter-input-wrapper {
+      max-width: none;
+    }
+
+    .social-links {
+      gap: 1.5rem;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Footer",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Newsletter"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_heading",
+      "default": "Subscribe to our emails",
+      "label": "Newsletter heading"
+    },
+    {
+      "type": "richtext",
+      "id": "newsletter_description",
+      "default": "<p>Be the first to know about new collections and exclusive offers.</p>",
+      "label": "Newsletter description"
+    },
+    {
+      "type": "header",
+      "content": "Social media"
+    },
+    {
+      "type": "url",
+      "id": "social_facebook_link",
+      "label": "Facebook"
+    },
+    {
+      "type": "url",
+      "id": "social_instagram_link",
+      "label": "Instagram"
+    },
+    {
+      "type": "url",
+      "id": "social_twitter_link",
+      "label": "Twitter"
+    },
+    {
+      "type": "url",
+      "id": "social_youtube_link",
+      "label": "YouTube"
+    }
+  ]
+}
+{% endschema %}
