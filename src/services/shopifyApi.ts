@@ -1,5 +1,5 @@
 
-import { SHOPIFY_GRAPHQL_URL, SHOPIFY_CONFIG } from '@/config/shopify';
+import { SHOPIFY_GRAPHQL_URL, shopifyConfig } from '@/config/shopify';
 import { ShopifyProduct, ShopifyCart, CartItem } from '@/types/shopify';
 
 class ShopifyAPI {
@@ -8,7 +8,7 @@ class ShopifyAPI {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-Shopify-Storefront-Access-Token': SHOPIFY_CONFIG.storefrontAccessToken,
+        'X-Shopify-Storefront-Access-Token': shopifyConfig.storefrontAccessToken,
       },
       body: JSON.stringify({
         query,
