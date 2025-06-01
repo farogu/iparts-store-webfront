@@ -1,5 +1,6 @@
 import { SHOPIFY_GRAPHQL_URL, shopifyConfig } from '@/config/shopify';
 import { ShopifyProduct, ShopifyCart, CartItem } from '@/types/shopify';
+import { shopifyAuth } from './shopifyAuth';
 
 // Cache for API responses
 const cache = new Map<string, { data: any; timestamp: number; ttl: number }>();
@@ -64,13 +65,19 @@ class ShopifyAPI {
       }
     }
 
+    // Get authentication token
+    const session = shopifyAuth.getSession();
+    const accessToken = session?.accessToken || shopifyConfig.storefrontAccessToken;
+
     try {
       const response = await fetch(SHOPIFY_GRAPHQL_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Shopify-Storefront-Access-Token': shopifyConfig.storefrontAccessToken,
+          'X-Shopify-Storefront-Access-Token': accessToken,
           'User-Agent': 'Shopify-Store-App/1.0',
+          'Accept': 'application/json',
+          'Cache-Control': 'no-cache',
         },
         body: JSON.stringify({
           query,
@@ -79,25 +86,54 @@ class ShopifyAPI {
       });
 
       if (!response.ok) {
-        // Don't expose internal server details
-        if (response.status === 401) {
-          throw new Error('Error de autenticación con Shopify.');
-        } else if (response.status === 429) {
-          throw new Error('Demasiadas solicitudes. Intenta de nuevo en unos momentos.');
-        } else if (response.status >= 500) {
-          throw new Error('Servicio temporalmente no disponible.');
-        } else if (response.status === 404) {
-          throw new Error('Recurso no encontrado.');
+        // Enhanced error handling with proper security considerations
+        switch (response.status) {
+          case 401:
+            // Clear invalid session
+            shopifyAuth.clearSession();
+            throw new Error('Error de autenticación. Por favor, vuelve a autorizar la aplicación.');
+          case 403:
+            throw new Error('Acceso denegado. Verifica los permisos de la aplicación.');
+          case 429:
+            // Extract retry-after header if available
+            const retryAfter = response.headers.get('Retry-After');
+            const message = retryAfter 
+              ? `Demasiadas solicitudes. Intenta de nuevo en ${retryAfter} segundos.`
+              : 'Demasiadas solicitudes. Intenta de nuevo en unos momentos.';
+            throw new Error(message);
+          case 422:
+            throw new Error('Datos de solicitud inválidos.');
+          case 500:
+          case 502:
+          case 503:
+          case 504:
+            throw new Error('Servicio temporalmente no disponible. Intenta más tarde.');
+          case 404:
+            throw new Error('Recurso no encontrado.');
+          default:
+            throw new Error('Error de conexión con el servicio.');
         }
-        throw new Error('Error de conexión con el servicio.');
       }
 
       const result = await response.json();
       
       if (result.errors) {
         console.error('GraphQL errors:', result.errors);
+        
+        // Handle specific GraphQL errors
+        const firstError = result.errors[0];
+        if (firstError?.extensions?.code === 'ACCESS_DENIED') {
+          shopifyAuth.clearSession();
+          throw new Error('Sesión expirada. Por favor, vuelve a autorizar la aplicación.');
+        }
+        
         // Don't expose GraphQL errors to users
         throw new Error('Error procesando la solicitud.');
+      }
+
+      // Security: Validate response structure
+      if (!result.data || typeof result.data !== 'object') {
+        throw new Error('Respuesta inválida del servidor.');
       }
 
       // Cache successful responses for queries
@@ -111,6 +147,13 @@ class ShopifyAPI {
 
       return result.data;
     } catch (error) {
+      // Enhanced error logging (without exposing sensitive data)
+      console.error('API Request failed:', {
+        query: query.substring(0, 100), // Log only first 100 chars
+        timestamp: new Date().toISOString(),
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+
       if (error instanceof TypeError && error.message.includes('fetch')) {
         throw new Error('Error de conexión. Verifica tu internet y intenta de nuevo.');
       }
