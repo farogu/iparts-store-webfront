@@ -18,9 +18,5 @@
         { "key": "Access-Control-Allow-Headers", "value": "X-Requested-With, Content-Type, Authorization" }
       ]
     }
-  ],
-  "env": {
-    "VITE_SHOPIFY_DOMAIN": "@vite_shopify_domain",
-    "VITE_SHOPIFY_STOREFRONT_TOKEN": "@vite_shopify_storefront_token"
-  }
+  ]
 }
