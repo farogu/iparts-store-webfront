@@ -1,0 +1,143 @@
+
+{% comment %}
+  Sección hero con integración Sunsky
+{% endcomment %}
+
+<div class="sunsky-hero">
+  <div class="hero-content">
+    <div class="container">
+      <div class="hero-text">
+        <h1 class="hero-title">
+          {{ section.settings.title | default: "Repuestos iPhone de Calidad Premium" }}
+        </h1>
+        <p class="hero-description">
+          {{ section.settings.description | default: "Encuentra las mejores piezas para tu iPhone con garantía de calidad y compatibilidad verificada." }}
+        </p>
+        <div class="hero-actions">
+          <a href="#model-selector" class="btn btn-primary btn-large">
+            {{ section.settings.cta_text | default: "Seleccionar mi iPhone" }}
+          </a>
+          <a href="/collections/all" class="btn btn-secondary btn-large">
+            Ver todos los productos
+          </a>
+        </div>
+      </div>
+      {% if section.settings.hero_image %}
+        <div class="hero-image">
+          <img src="{{ section.settings.hero_image | image_url }}" 
+               alt="{{ section.settings.hero_image.alt | escape }}"
+               loading="eager">
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<style>
+  .sunsky-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4rem 0;
+    margin-bottom: 2rem;
+  }
+  
+  .sunsky-hero .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+  
+  .hero-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+  
+  .hero-description {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+    line-height: 1.6;
+  }
+  
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .btn-large {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+  }
+  
+  .btn-secondary {
+    background: transparent;
+    color: white;
+    border: 2px solid white;
+  }
+  
+  .btn-secondary:hover {
+    background: white;
+    color: #667eea;
+  }
+  
+  .hero-image img {
+    width: 100%;
+    height: auto;
+    max-width: 500px;
+    margin: 0 auto;
+    display: block;
+  }
+  
+  @media (max-width: 768px) {
+    .sunsky-hero .container {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+    
+    .hero-title {
+      font-size: 2rem;
+    }
+    
+    .hero-actions {
+      justify-content: center;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Sunsky Hero",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Título",
+      "default": "Repuestos iPhone de Calidad Premium"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Descripción",
+      "default": "Encuentra las mejores piezas para tu iPhone con garantía de calidad y compatibilidad verificada."
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "Texto del botón principal",
+      "default": "Seleccionar mi iPhone"
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Imagen del hero"
+    }
+  ]
+}
+{% endschema %}

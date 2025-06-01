@@ -1,0 +1,241 @@
+
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Sunsky iPhone Parts Theme",
+    "theme_version": "1.0.0",
+    "theme_author": "Sunsky Integration",
+    "theme_documentation_url": "",
+    "theme_support_url": ""
+  },
+  {
+    "name": "Sunsky API Configuration",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Configuración de la API de Sunsky"
+      },
+      {
+        "type": "text",
+        "id": "sunsky_api_key",
+        "label": "API Key de Sunsky",
+        "info": "Ingresa tu clave de API de Sunsky para conectar los productos"
+      },
+      {
+        "type": "text",
+        "id": "sunsky_base_url",
+        "label": "URL Base de la API",
+        "default": "https://api.sunsky-online.com/v1",
+        "info": "URL base de la API de Sunsky (normalmente no necesitas cambiar esto)"
+      },
+      {
+        "type": "checkbox",
+        "id": "sunsky_sync_enabled",
+        "label": "Habilitar sincronización automática",
+        "default": true,
+        "info": "Sincronizar automáticamente precios y stock con Sunsky"
+      },
+      {
+        "type": "select",
+        "id": "sunsky_sync_frequency",
+        "label": "Frecuencia de sincronización",
+        "default": "hourly",
+        "options": [
+          {
+            "value": "realtime",
+            "label": "Tiempo real"
+          },
+          {
+            "value": "hourly",
+            "label": "Cada hora"
+          },
+          {
+            "value": "daily",
+            "label": "Diario"
+          }
+        ],
+        "info": "Qué tan seguido sincronizar datos con Sunsky"
+      }
+    ]
+  },
+  {
+    "name": "Product Display",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Configuración de visualización de productos"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_compatibility_badges",
+        "label": "Mostrar badges de compatibilidad",
+        "default": true,
+        "info": "Mostrar qué modelos de iPhone son compatibles con cada producto"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_sunsky_stock",
+        "label": "Mostrar stock de Sunsky",
+        "default": true,
+        "info": "Mostrar información de stock en tiempo real de Sunsky"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_sunsky_sku",
+        "label": "Mostrar SKU de Sunsky",
+        "default": false,
+        "info": "Mostrar el código SKU de Sunsky en las páginas de producto"
+      },
+      {
+        "type": "range",
+        "id": "products_per_page",
+        "min": 12,
+        "max": 48,
+        "step": 4,
+        "unit": "productos",
+        "label": "Productos por página",
+        "default": 24
+      }
+    ]
+  },
+  {
+    "name": "iPhone Models",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Configuración de modelos de iPhone"
+      },
+      {
+        "type": "textarea",
+        "id": "supported_models",
+        "label": "Modelos soportados",
+        "default": "iPhone 15 Pro Max, iPhone 15 Pro, iPhone 15 Plus, iPhone 15, iPhone 14 Pro Max, iPhone 14 Pro, iPhone 14 Plus, iPhone 14, iPhone 13 Pro Max, iPhone 13 Pro, iPhone 13 mini, iPhone 13, iPhone 12 Pro Max, iPhone 12 Pro, iPhone 12 mini, iPhone 12",
+        "info": "Lista de modelos de iPhone separados por comas"
+      },
+      {
+        "type": "checkbox",
+        "id": "auto_detect_model",
+        "label": "Auto-detectar modelo del dispositivo",
+        "default": false,
+        "info": "Intentar detectar automáticamente el modelo del iPhone del usuario"
+      }
+    ]
+  },
+  {
+    "name": "Typography",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Tipografía"
+      },
+      {
+        "type": "font_picker",
+        "id": "type_header_font",
+        "default": "assistant_n4",
+        "label": "Fuente de encabezados",
+        "info": "Fuente para títulos y encabezados"
+      },
+      {
+        "type": "range",
+        "id": "heading_scale",
+        "min": 100,
+        "max": 150,
+        "step": 5,
+        "unit": "%",
+        "label": "Escala de encabezados",
+        "default": 100
+      },
+      {
+        "type": "font_picker",
+        "id": "type_body_font",
+        "default": "assistant_n4",
+        "label": "Fuente del cuerpo",
+        "info": "Fuente para el texto del cuerpo"
+      },
+      {
+        "type": "range",
+        "id": "body_scale",
+        "min": 100,
+        "max": 130,
+        "step": 5,
+        "unit": "%",
+        "label": "Escala del cuerpo",
+        "default": 100
+      }
+    ]
+  },
+  {
+    "name": "Colors",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Colores del tema"
+      },
+      {
+        "type": "color",
+        "id": "colors_accent_1",
+        "default": "#3b82f6",
+        "label": "Color de acento 1"
+      },
+      {
+        "type": "color",
+        "id": "colors_accent_2",
+        "default": "#1e40af",
+        "label": "Color de acento 2"
+      },
+      {
+        "type": "color",
+        "id": "colors_text",
+        "default": "#1f2937",
+        "label": "Color del texto"
+      },
+      {
+        "type": "color",
+        "id": "colors_outline_button_labels",
+        "default": "#1f2937",
+        "label": "Color de botones outline"
+      },
+      {
+        "type": "color",
+        "id": "colors_background_1",
+        "default": "#ffffff",
+        "label": "Color de fondo 1"
+      },
+      {
+        "type": "color",
+        "id": "colors_background_2",
+        "default": "#f3f4f6",
+        "label": "Color de fondo 2"
+      }
+    ]
+  },
+  {
+    "name": "Layout",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Configuración de diseño"
+      },
+      {
+        "type": "range",
+        "id": "page_width",
+        "min": 1000,
+        "max": 1600,
+        "step": 100,
+        "unit": "px",
+        "label": "Ancho de página",
+        "default": 1200
+      },
+      {
+        "type": "range",
+        "id": "spacing_sections",
+        "min": 0,
+        "max": 100,
+        "step": 4,
+        "unit": "px",
+        "label": "Espaciado entre secciones",
+        "default": 0
+      }
+    ]
+  }
+]

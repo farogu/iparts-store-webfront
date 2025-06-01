@@ -1,0 +1,163 @@
+
+{% comment %}
+  Selector de modelos de iPhone con integración Sunsky
+{% endcomment %}
+
+<div id="model-selector" class="sunsky-model-selector-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">{{ section.settings.title | default: "Selecciona tu modelo de iPhone" }}</h2>
+      <p class="section-description">{{ section.settings.description | default: "Elige tu modelo para ver solo productos compatibles" }}</p>
+    </div>
+    
+    <div class="model-selector">
+      {% assign models = "iphone-15-pro,iphone-15-plus,iphone-15,iphone-14-pro-max,iphone-14-pro,iphone-14-plus,iphone-14,iphone-13-pro-max,iphone-13-pro,iphone-13-mini,iphone-13,iphone-12-pro-max,iphone-12-pro,iphone-12-mini,iphone-12" | split: "," %}
+      
+      {% for model in models %}
+        {% assign model_data = model | split: "-" %}
+        {% assign model_number = model_data[1] %}
+        {% assign model_variant = model_data[2] | default: "" %}
+        
+        <div class="model-selector-item" data-model="{{ model }}">
+          <div class="model-image">
+            <img src="{{ 'iphone-' | append: model_number | append: '.png' | asset_url }}" 
+                 alt="iPhone {{ model_number }} {{ model_variant }}"
+                 onerror="this.src='{{ 'iphone-placeholder.png' | asset_url }}'">
+          </div>
+          <div class="model-info">
+            <h3 class="model-name">iPhone {{ model_number }}{% if model_variant != "" %} {{ model_variant | capitalize }}{% endif %}</h3>
+            <span class="model-year">{{ 2024 | minus: 15 | plus: model_number | at_most: 2024 }}</span>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    
+    <div class="selected-model-info" style="display: none;">
+      <div class="selected-model-card">
+        <h3>Modelo seleccionado: <span id="selected-model-name"></span></h3>
+        <p>Mostrando productos compatibles con tu iPhone</p>
+        <button class="btn btn-outline" onclick="clearModelSelection()">
+          Cambiar modelo
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function clearModelSelection() {
+    document.querySelectorAll('.model-selector-item').forEach(item => {
+      item.classList.remove('active');
+    });
+    document.querySelector('.selected-model-info').style.display = 'none';
+    
+    // Limpiar filtros en la app
+    if (window.SunskyApp) {
+      window.SunskyApp.currentModel = '';
+      window.SunskyApp.filterProducts();
+    }
+    
+    // Actualizar URL
+    const url = new URL(window.location);
+    url.searchParams.delete('model');
+    window.history.pushState({}, '', url);
+  }
+  
+  // Inicializar modelo desde URL
+  document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const modelFromUrl = urlParams.get('model');
+    
+    if (modelFromUrl) {
+      const modelElement = document.querySelector(`[data-model="${modelFromUrl}"]`);
+      if (modelElement) {
+        modelElement.click();
+      }
+    }
+  });
+</script>
+
+<style>
+  .sunsky-model-selector-section {
+    padding: 4rem 0;
+    background: #f8fafc;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+  
+  .section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  
+  .section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #1f2937;
+  }
+  
+  .section-description {
+    font-size: 1.1rem;
+    color: #6b7280;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .selected-model-info {
+    margin-top: 2rem;
+  }
+  
+  .selected-model-card {
+    background: #3b82f6;
+    color: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    text-align: center;
+  }
+  
+  .selected-model-card h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+  }
+  
+  .selected-model-card p {
+    margin: 0 0 1rem 0;
+    opacity: 0.9;
+  }
+  
+  .btn-outline {
+    background: transparent;
+    color: white;
+    border: 2px solid white;
+  }
+  
+  .btn-outline:hover {
+    background: white;
+    color: #3b82f6;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Sunsky Model Selector",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Título de la sección",
+      "default": "Selecciona tu modelo de iPhone"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Descripción",
+      "default": "Elige tu modelo para ver solo productos compatibles"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,62 @@
+
+{% comment %}
+  Template para productos individuales con integración Sunsky
+{% endcomment %}
+
+{{ 'section-product.css' | asset_url | stylesheet_tag }}
+{{ 'component-accordion.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+{{ 'component-slider.css' | asset_url | stylesheet_tag }}
+{{ 'component-rating.css' | asset_url | stylesheet_tag }}
+{{ 'component-deferred-media.css' | asset_url | stylesheet_tag }}
+
+<script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+
+{%- assign first_3d_model = product.media | where: "media_type", "model" | first -%}
+{%- if first_3d_model -%}
+  {{ 'component-product-model.css' | asset_url | stylesheet_tag }}
+  <script type="application/json" id="ProductJSON-{{ product.id }}">
+    {{ product.media | where: 'media_type', 'model' | json }}
+  </script>
+  <script src="{{ 'product-model.js' | asset_url }}" defer></script>
+{%- endif -%}
+
+{% section 'sunsky-product-hero' %}
+{% section 'sunsky-compatibility-check' %}
+{% section 'sunsky-product-recommendations' %}
+
+<div class="sunsky-product-wrapper" data-product-id="{{ product.id }}">
+  <div class="sunsky-product-info">
+    {% if product.metafields.custom.sunsky_sku %}
+      <div class="sunsky-integration-status">
+        <span class="badge badge--success">Sincronizado con Sunsky</span>
+        <span class="sunsky-sku">SKU: {{ product.metafields.custom.sunsky_sku }}</span>
+      </div>
+    {% endif %}
+    
+    {% if product.metafields.custom.compatible_models %}
+      <div class="compatibility-info">
+        <h4>Compatible con:</h4>
+        <div class="model-tags">
+          {% assign models = product.metafields.custom.compatible_models | split: ',' %}
+          {% for model in models %}
+            <span class="model-tag">{{ model | strip }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  // Inicializar funcionalidades específicas del producto
+  document.addEventListener('DOMContentLoaded', function() {
+    if (window.SunskyProduct) {
+      window.SunskyProduct.init({
+        productId: {{ product.id | json }},
+        handle: {{ product.handle | json }},
+        variants: {{ product.variants | json }}
+      });
+    }
+  });
+</script>

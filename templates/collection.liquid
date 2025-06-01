@@ -1,0 +1,70 @@
+
+{% comment %}
+  Template para colecciones con filtros de modelos de iPhone
+{% endcomment %}
+
+{{ 'component-collection-hero.css' | asset_url | stylesheet_tag }}
+{{ 'component-card.css' | asset_url | stylesheet_tag }}
+{{ 'component-price.css' | asset_url | stylesheet_tag }}
+
+<link rel="stylesheet" href="{{ 'component-facets.css' | asset_url }}" media="print" onload="this.media='all'">
+<noscript>{{ 'component-facets.css' | asset_url | stylesheet_tag }}</noscript>
+
+<script src="{{ 'facets.js' | asset_url }}" defer="defer"></script>
+
+{%- if section.settings.enable_filtering or section.settings.enable_sorting -%}
+  {{ 'component-show-more.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'show-more.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+{% section 'sunsky-collection-hero' %}
+{% section 'sunsky-model-filter' %}
+{% section 'sunsky-collection-products' %}
+
+<div id="sunsky-product-grid" class="collection-product-grid">
+  {%- paginate collection.products by section.settings.products_per_page -%}
+    <div class="collection">
+      <div class="loading-overlay gradient"></div>
+      
+      <ul id="product-grid" data-id="{{ section.id }}" class="
+        grid product-grid
+        grid--{{ section.settings.columns_mobile }}-col-tablet-down
+        grid--{{ section.settings.columns_desktop }}-col-desktop">
+        {%- for product in collection.products -%}
+          {% render 'sunsky-product-card', 
+            product_card_product: product,
+            media_aspect_ratio: section.settings.image_ratio,
+            image_shape: section.settings.image_shape,
+            show_secondary_image: section.settings.show_secondary_image,
+            show_vendor: section.settings.show_vendor,
+            show_rating: section.settings.show_rating,
+            lazy_load: lazy_load
+          %}
+        {%- else -%}
+          <div class="collection collection--empty page-width" id="product-grid" data-id="{{ section.id }}">
+            <div class="loading-overlay gradient"></div>
+            <div class="title-wrapper center">
+              <h2 class="title title--primary">
+                {{ 'sections.collection_template.empty' | t }}<br>
+                {{ 'sections.collection_template.use_fewer_filters_html' | t: link: collection.url, class: "underlined-link link" }}
+              </h2>
+            </div>
+          </div>
+        {%- endfor -%}
+      </ul>
+
+      {%- if paginate.pages > 1 -%}
+        {% render 'pagination', paginate: paginate, anchor: '' %}
+      {%- endif -%}
+    </div>
+  {%- endpaginate -%}
+</div>
+
+<script>
+  // Integración con filtros de modelos Sunsky
+  document.addEventListener('DOMContentLoaded', function() {
+    if (window.SunskyFilters) {
+      window.SunskyFilters.initCollectionPage();
+    }
+  });
+</script>

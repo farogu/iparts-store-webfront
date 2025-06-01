@@ -1,0 +1,18 @@
+
+{% comment %}
+  Template principal para la página de inicio con integración de Sunsky API
+{% endcomment %}
+
+{% section 'sunsky-hero' %}
+{% section 'sunsky-model-selector' %}
+{% section 'sunsky-featured-products' %}
+{% section 'sunsky-testimonials' %}
+
+<script>
+  // Inicializar la aplicación Sunsky al cargar la página
+  document.addEventListener('DOMContentLoaded', function() {
+    if (window.SunskyApp) {
+      window.SunskyApp.init();
+    }
+  });
+</script>
