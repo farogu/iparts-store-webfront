@@ -1,0 +1,19 @@
+
+<div id="model-selector" class="model-selector-section">
+  <div class="container">
+    <h2>Selecciona tu iPhone</h2>
+    <div class="model-grid">
+      {% assign models = "15,14,13,12" | split: "," %}
+      {% for model in models %}
+        <div class="model-item" data-model="iphone-{{ model }}">
+          <h3>iPhone {{ model }}</h3>
+        </div>
+      {% endfor %}
+    </div>
+    
+    <div class="selected-model" style="display: none;">
+      <p>Modelo seleccionado: <span id="selected-model-name"></span></p>
+      <button onclick="clearSelection()">Cambiar modelo</button>
+    </div>
+  </div>
+</div>

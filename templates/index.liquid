@@ -6,29 +6,24 @@
   </div>
 </div>
 
-<div id="model-selector" class="model-selector-section">
-  <div class="container">
-    <h2>Selecciona tu iPhone</h2>
-    <div class="model-grid">
-      {% assign models = "15,14,13,12" | split: "," %}
-      {% for model in models %}
-        <div class="model-item" data-model="iphone-{{ model }}">
-          <h3>iPhone {{ model }}</h3>
-        </div>
-      {% endfor %}
-    </div>
-  </div>
-</div>
+{% render 'model-selector' %}
 
 <div id="products-section">
   <div class="container">
     <h2>Productos Destacados</h2>
-    <div id="product-grid" class="product-grid">
+    <div id="shopify-featured-grid" class="product-grid">
       {% for product in collections.all.products limit: 8 %}
         {% render 'product-card', product: product %}
       {% endfor %}
     </div>
+    
+    <div id="sunsky-featured" class="product-grid" style="display: none;">
+      <!-- Productos destacados de Sunsky -->
+    </div>
   </div>
 </div>
 
-<div class="loader" style="display: none;">Cargando...</div>
+<div class="loader" style="display: none;">
+  <div class="spinner"></div>
+  <p>Cargando productos...</p>
+</div>

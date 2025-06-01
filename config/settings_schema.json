@@ -7,17 +7,23 @@
     "theme_author": "Sunsky Integration"
   },
   {
-    "name": "Sunsky Configuration",
+    "name": "Configuración Sunsky",
     "settings": [
       {
         "type": "header",
-        "content": "API Configuration"
+        "content": "API de Sunsky"
       },
       {
         "type": "text",
         "id": "sunsky_api_key",
-        "label": "Sunsky API Key",
-        "info": "Enter your Sunsky API key to connect products"
+        "label": "Clave API de Sunsky",
+        "info": "Ingresa tu clave API de Sunsky para conectar productos. Opcional - si no se proporciona, solo se mostrarán productos de Shopify."
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_sunsky_integration",
+        "label": "Habilitar integración con Sunsky",
+        "default": false
       }
     ]
   }

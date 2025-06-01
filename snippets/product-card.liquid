@@ -1,14 +1,21 @@
 
-<div class="product-card" data-product-id="{{ product.id }}">
+<div class="product-card" data-product-id="{{ product.id }}"
+     {% if product.metafields.custom.sunsky_sku %}data-sunsky-sku="{{ product.metafields.custom.sunsky_sku }}"{% endif %}>
   <a href="{{ product.url }}">
     {% if product.featured_image %}
       <img src="{{ product.featured_image | img_url: '300x300' }}" alt="{{ product.title }}">
+    {% else %}
+      <img src="{{ 'placeholder.png' | asset_url }}" alt="{{ product.title }}">
     {% endif %}
+    
     <h3>{{ product.title }}</h3>
     <p class="price">{{ product.price | money }}</p>
     
     {% if product.metafields.custom.sunsky_sku %}
       <span class="sunsky-badge">Sunsky</span>
+      <div class="stock-info">
+        <span class="stock-loading">Verificando stock...</span>
+      </div>
     {% endif %}
   </a>
 </div>

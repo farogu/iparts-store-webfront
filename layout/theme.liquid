@@ -36,7 +36,8 @@
     <script src="{{ 'sunsky-integration.js' | asset_url }}"></script>
     <script>
       window.sunskySettings = {
-        apiKey: {{ settings.sunsky_api_key | json }}
+        apiKey: {{ settings.sunsky_api_key | json }},
+        enabled: {{ settings.enable_sunsky_integration | json }}
       };
     </script>
   </body>

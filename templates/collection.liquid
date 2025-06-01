@@ -9,19 +9,20 @@
 </div>
 
 <div class="container">
-  <div class="filters">
-    <select id="model-filter">
-      <option value="">Todos los modelos</option>
-      <option value="iphone-15">iPhone 15</option>
-      <option value="iphone-14">iPhone 14</option>
-      <option value="iphone-13">iPhone 13</option>
-      <option value="iphone-12">iPhone 12</option>
-    </select>
-  </div>
+  {% render 'model-selector' %}
 
-  <div id="product-grid" class="product-grid">
+  <div id="shopify-product-grid" class="product-grid">
     {% for product in collection.products %}
       {% render 'product-card', product: product %}
     {% endfor %}
   </div>
+  
+  <div id="sunsky-products" class="product-grid" style="display: none;">
+    <!-- Productos de Sunsky se cargan aquí -->
+  </div>
+</div>
+
+<div class="loader" style="display: none;">
+  <div class="spinner"></div>
+  <p>Cargando productos...</p>
 </div>
