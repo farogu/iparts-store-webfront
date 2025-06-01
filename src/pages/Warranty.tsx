@@ -1,3 +1,4 @@
+
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 
@@ -129,18 +130,18 @@ const Warranty = () => {
             </div>
           </section>
 
-         <section className="bg-yellow-50 border-l-4 border-yellow-400 p-6 my-8 rounded-md shadow-sm">
-      <h2 className="text-lg font-semibold text-yellow-800 mb-2">
-        ⚠️ Aviso importante sobre garantías
-      </h2>
-      <p className="text-gray-700">
-        Algunos productos como <span className="font-semibold">carcazas</span>, <span className="font-semibold">micas de cristal</span> y <span className="font-semibold">micas de hidrogel</span> 
-        <span className="font-semibold text-red-600"> no cuentan con garantía</span> debido a su naturaleza frágil y uso inmediato tras la instalación.
-      </p>
-      <p className="text-gray-700 mt-2">
-        Te recomendamos revisar bien el producto antes de abrirlo o instalarlo. Si tienes dudas, contáctanos antes de completar tu compra.
-      </p>
-    </section>
+          <section className="bg-yellow-50 border-l-4 border-yellow-400 p-6 my-8 rounded-md shadow-sm">
+            <h2 className="text-lg font-semibold text-yellow-800 mb-2">
+              ⚠️ Aviso importante sobre garantías
+            </h2>
+            <p className="text-gray-700">
+              Algunos productos como <span className="font-semibold">carcazas</span>, <span className="font-semibold">micas de cristal</span> y <span className="font-semibold">micas de hidrogel</span> 
+              <span className="font-semibold text-red-600"> no cuentan con garantía</span> debido a su naturaleza frágil y uso inmediato tras la instalación.
+            </p>
+            <p className="text-gray-700 mt-2">
+              Te recomendamos revisar bien el producto antes de abrirlo o instalarlo. Si tienes dudas, contáctanos antes de completar tu compra.
+            </p>
+          </section>
 
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">Instalación y Soporte</h2>
