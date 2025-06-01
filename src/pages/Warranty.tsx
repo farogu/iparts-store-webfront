@@ -144,10 +144,9 @@ const Warranty = () => {
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">Contacto para Garantías</h2>
             <div className="bg-gray-100 p-6 rounded-lg">
-              <p><strong>Email de Devoluciones:</strong> returns@ipartsstore.com</p>
-              <p><strong>Email de Garantías:</strong> warranty@ipartsstore.com</p>
-              <p><strong>Teléfono:</strong> +1 (555) 123-4567 (Ext. 2)</p>
-              <p><strong>Horario:</strong> Lunes a Viernes, 9:00 AM - 6:00 PM EST</p>
+              <p><strong>Email de Devoluciones y Garantías:</strong> contacto@ipartsstore.com</p>
+              <p><strong>Teléfono:</strong> +52 8115187063</p>
+              <p><strong>Horario:</strong> Lunes a Viernes,9:00–18:00 (GMT-6)</p>
             </div>
           </section>
 
