@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { ShoppingCart, Eye } from 'lucide-react';
 import { ShopifyProduct } from '@/types/shopify';
 import { useShopifyCart } from '@/hooks/useShopifyCart';
+import OptimizedImage from './OptimizedImage';
 
 interface ProductCardProps {
   product: ShopifyProduct;
@@ -52,10 +53,10 @@ const ProductCard = ({ product }: ProductCardProps) => {
           className="aspect-square bg-gray-100 overflow-hidden"
           onClick={handleViewProduct}
         >
-          <img
-            src={imageError ? '/placeholder.svg' : mainImage}
+          <OptimizedImage
+            src={mainImage}
             alt={product.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-full group-hover:scale-105 transition-transform duration-300"
             onError={() => setImageError(true)}
           />
         </div>
