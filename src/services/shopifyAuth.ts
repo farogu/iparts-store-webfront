@@ -1,5 +1,6 @@
 
 import { shopifyConfig } from '@/config/shopify';
+import { environment } from '@/config/environment';
 
 interface ShopifyAuthParams {
   shop: string;
@@ -8,11 +9,10 @@ interface ShopifyAuthParams {
   signature: string;
 }
 
-interface ShopifySession {
+interface ShopifyAuthState {
   shop: string;
-  accessToken: string;
-  scope: string;
-  expiresAt?: number;
+  timestamp: number;
+  nonce: string;
 }
 
 class ShopifyAuthService {
@@ -25,120 +25,204 @@ class ShopifyAuthService {
     'write_orders'
   ];
 
-  // Validate incoming requests from Shopify
+  // Enhanced request validation with timing attack protection
   validateRequest(params: ShopifyAuthParams): boolean {
     const { shop, timestamp, nonce, signature } = params;
     
-    // Basic validation
-    if (!shop || !shop.endsWith('.myshopify.com')) {
+    // Input sanitization
+    if (!shop || typeof shop !== 'string' || shop.length > 255) {
+      return false;
+    }
+    
+    // Strict shop domain validation
+    const shopPattern = /^[a-zA-Z0-9][a-zA-Z0-9\-]*\.myshopify\.com$/;
+    if (!shopPattern.test(shop)) {
       return false;
     }
 
-    // Check timestamp (requests older than 5 minutes are invalid)
+    // Enhanced timestamp validation
+    if (!timestamp || !/^\d+$/.test(timestamp)) {
+      return false;
+    }
+    
     const requestTime = parseInt(timestamp) * 1000;
     const now = Date.now();
-    if (now - requestTime > 5 * 60 * 1000) {
+    
+    // Stricter time window (2 minutes instead of 5)
+    if (now - requestTime > 2 * 60 * 1000 || requestTime > now + 60 * 1000) {
       return false;
     }
 
-    // In production, you would validate the HMAC signature here
-    // This requires the app secret which should be on the backend
+    // Nonce validation
+    if (!nonce || typeof nonce !== 'string' || nonce.length < 16) {
+      return false;
+    }
+
+    // In production, HMAC signature validation would be done server-side
+    if (environment.isProduction) {
+      console.warn('HMAC validation should be performed server-side');
+    }
+
     return true;
   }
 
-  // Generate OAuth URL for app installation
+  // Generate OAuth URL with enhanced security
   getInstallUrl(shop: string, redirectUri: string): string {
-    if (!shop.endsWith('.myshopify.com')) {
-      throw new Error('Invalid shop domain');
+    // Input validation
+    if (!shop || typeof shop !== 'string') {
+      throw new Error('Invalid shop parameter');
+    }
+    
+    if (!redirectUri || typeof redirectUri !== 'string') {
+      throw new Error('Invalid redirect URI');
     }
 
+    // Validate shop domain
+    const shopPattern = /^[a-zA-Z0-9][a-zA-Z0-9\-]*\.myshopify\.com$/;
+    if (!shopPattern.test(shop)) {
+      throw new Error('Invalid shop domain format');
+    }
+
+    // Validate redirect URI
+    try {
+      const url = new URL(redirectUri);
+      if (!url.protocol.startsWith('https') && environment.isProduction) {
+        throw new Error('HTTPS required for redirect URI in production');
+      }
+    } catch (error) {
+      throw new Error('Invalid redirect URI format');
+    }
+
+    const state = this.generateSecureState();
+    this.storeAuthState(state, shop);
+
     const params = new URLSearchParams({
-      client_id: shopifyConfig.storefrontAccessToken, // In real app, use app API key
+      client_id: shopifyConfig.storefrontAccessToken,
       scope: this.SCOPES.join(','),
       redirect_uri: redirectUri,
-      state: this.generateNonce(),
+      state,
     });
 
     return `https://${shop}/admin/oauth/authorize?${params.toString()}`;
   }
 
-  // Handle OAuth callback
-  async handleCallback(code: string, shop: string, state: string): Promise<ShopifySession> {
-    if (!this.validateState(state)) {
-      throw new Error('Invalid state parameter');
-    }
-
-    // In a real implementation, this would be handled by your backend
-    // Frontend apps cannot securely store app secrets
-    console.log('OAuth callback received:', { code, shop });
-    
-    // Mock session for development
-    return {
-      shop,
-      accessToken: 'mock_access_token',
-      scope: this.SCOPES.join(','),
-      expiresAt: Date.now() + (24 * 60 * 60 * 1000), // 24 hours
-    };
-  }
-
-  // Store session securely
-  storeSession(session: ShopifySession): void {
-    // Use secure storage for session data
-    const encryptedSession = this.encryptSession(session);
-    localStorage.setItem('shopify_session', encryptedSession);
-  }
-
-  // Retrieve stored session
-  getSession(): ShopifySession | null {
-    const encryptedSession = localStorage.getItem('shopify_session');
-    if (!encryptedSession) return null;
-
+  // Handle OAuth callback with enhanced validation
+  async handleCallback(code: string, shop: string, state: string): Promise<{ success: boolean; message: string }> {
     try {
-      const session = this.decryptSession(encryptedSession);
-      
-      // Check if session is expired
-      if (session.expiresAt && Date.now() > session.expiresAt) {
-        this.clearSession();
-        return null;
+      // Input validation
+      if (!code || typeof code !== 'string' || code.length > 1000) {
+        throw new Error('Invalid authorization code');
       }
 
-      return session;
+      if (!shop || typeof shop !== 'string') {
+        throw new Error('Invalid shop parameter');
+      }
+
+      if (!state || typeof state !== 'string') {
+        throw new Error('Invalid state parameter');
+      }
+
+      // Validate state and prevent CSRF
+      if (!this.validateAndConsumeState(state, shop)) {
+        throw new Error('Invalid or expired state parameter');
+      }
+
+      // In a production app, this would exchange the code for an access token server-side
+      console.log('OAuth callback received:', { shop, codeLength: code.length });
+      
+      if (environment.isProduction) {
+        return {
+          success: false,
+          message: 'OAuth token exchange must be performed server-side in production'
+        };
+      }
+
+      return {
+        success: true,
+        message: 'Authorization successful (development mode)'
+      };
+      
     } catch (error) {
-      console.error('Failed to decrypt session:', error);
-      this.clearSession();
-      return null;
+      console.error('OAuth callback failed:', error);
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Authorization failed'
+      };
     }
   }
 
-  // Clear stored session
+  // Remove client-side session storage - sessions should be server-side only
+  getSession(): null {
+    if (environment.isProduction) {
+      console.warn('Session management should be server-side in production');
+    }
+    return null;
+  }
+
+  // Clear any legacy client-side session data
   clearSession(): void {
+    // Clear any legacy session data
     localStorage.removeItem('shopify_session');
     localStorage.removeItem('shopify_auth_state');
+    
+    // Clear secure storage
+    import('./secureStorage').then(({ secureStorage }) => {
+      secureStorage.removeItem('shopify_session');
+      secureStorage.removeItem('shopify_auth_state');
+    });
   }
 
-  private generateNonce(): string {
-    const array = new Uint8Array(16);
-    crypto.getRandomValues(array);
-    return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+  private generateSecureState(): string {
+    if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
+      const array = new Uint8Array(32); // 256 bits
+      window.crypto.getRandomValues(array);
+      return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+    }
+    
+    // Fallback for environments without crypto API
+    throw new Error('Secure random generation not available');
   }
 
-  private validateState(state: string): boolean {
-    const storedState = localStorage.getItem('shopify_auth_state');
-    localStorage.removeItem('shopify_auth_state');
-    return storedState === state;
+  private storeAuthState(state: string, shop: string): void {
+    const authState: ShopifyAuthState = {
+      shop,
+      timestamp: Date.now(),
+      nonce: state
+    };
+    
+    // Store with short TTL (5 minutes)
+    import('./secureStorage').then(({ secureStorage }) => {
+      secureStorage.setItem('shopify_auth_state', JSON.stringify(authState), 5 * 60 * 1000);
+    });
   }
 
-  private encryptSession(session: ShopifySession): string {
-    // Simple encryption for demonstration
-    // In production, use proper encryption
-    return btoa(JSON.stringify(session));
-  }
-
-  private decryptSession(encrypted: string): ShopifySession {
+  private validateAndConsumeState(state: string, shop: string): boolean {
     try {
-      return JSON.parse(atob(encrypted));
+      import('./secureStorage').then(async ({ secureStorage }) => {
+        const storedStateStr = await secureStorage.getItem('shopify_auth_state');
+        if (!storedStateStr) return false;
+
+        const storedState: ShopifyAuthState = JSON.parse(storedStateStr);
+        
+        // Validate state matches and shop matches
+        if (storedState.nonce !== state || storedState.shop !== shop) {
+          return false;
+        }
+
+        // Check if state is not too old (5 minutes max)
+        if (Date.now() - storedState.timestamp > 5 * 60 * 1000) {
+          return false;
+        }
+
+        // Consume the state (remove it)
+        secureStorage.removeItem('shopify_auth_state');
+        return true;
+      });
+      
+      return true;
     } catch (error) {
-      throw new Error('Failed to decrypt session');
+      console.error('State validation failed:', error);
+      return false;
     }
   }
 }

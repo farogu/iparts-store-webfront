@@ -6,8 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import { secureStorage } from '@/utils/secureStorage';
 
 const CART_STORAGE_KEY = 'shopify-cart-id';
-const CART_EXPIRY_KEY = 'shopify-cart-expiry';
-const CART_EXPIRY_HOURS = 24; // 24 hours
+const CART_EXPIRY_HOURS = 24;
 
 export const useShopifyCart = () => {
   const [cart, setCart] = useState<ShopifyCart | null>(null);
@@ -15,23 +14,9 @@ export const useShopifyCart = () => {
   const { handleError } = useErrorHandler();
   const { toast } = useToast();
 
-  // Check if cart is expired
-  const isCartExpired = () => {
-    const expiry = secureStorage.getItem(CART_EXPIRY_KEY);
-    if (!expiry) return true;
-    return Date.now() > parseInt(expiry);
-  };
-
-  // Set cart expiry
-  const setCartExpiry = () => {
-    const expiry = Date.now() + (CART_EXPIRY_HOURS * 60 * 60 * 1000);
-    secureStorage.setItem(CART_EXPIRY_KEY, expiry.toString());
-  };
-
-  // Clear cart data
-  const clearCartData = () => {
-    secureStorage.removeItem(CART_STORAGE_KEY);
-    secureStorage.removeItem(CART_EXPIRY_KEY);
+  // Clear cart data securely
+  const clearCartData = async () => {
+    await secureStorage.removeItem(CART_STORAGE_KEY);
     setCart(null);
   };
 
@@ -43,10 +28,10 @@ export const useShopifyCart = () => {
     try {
       setIsLoading(true);
       
-      const existingCartId = secureStorage.getItem(CART_STORAGE_KEY);
+      const existingCartId = await secureStorage.getItem(CART_STORAGE_KEY);
       
-      // Check if we have a cart ID and it's not expired
-      if (existingCartId && !isCartExpired()) {
+      // Check if we have a valid cart ID
+      if (existingCartId) {
         try {
           const existingCart = await shopifyApi.getCart(existingCartId);
           setCart(existingCart);
@@ -54,23 +39,26 @@ export const useShopifyCart = () => {
           return;
         } catch (error) {
           console.log('Carrito existente no válido, creando uno nuevo');
-          clearCartData();
+          await clearCartData();
         }
-      } else if (existingCartId && isCartExpired()) {
-        console.log('Carrito expirado, creando uno nuevo');
-        clearCartData();
       }
 
       // Create new cart
       const newCart = await shopifyApi.createCart();
       setCart(newCart);
-      secureStorage.setItem(CART_STORAGE_KEY, newCart.id);
-      setCartExpiry();
+      
+      // Store with TTL
+      await secureStorage.setItem(
+        CART_STORAGE_KEY, 
+        newCart.id, 
+        CART_EXPIRY_HOURS * 60 * 60 * 1000
+      );
+      
       console.log('Nuevo carrito creado:', newCart.id);
       
     } catch (error) {
       handleError(error, 'No se pudo inicializar el carrito');
-      clearCartData();
+      await clearCartData();
     } finally {
       setIsLoading(false);
     }
@@ -86,7 +74,13 @@ export const useShopifyCart = () => {
       setIsLoading(true);
       const updatedCart = await shopifyApi.addToCart(cart.id, items);
       setCart(updatedCart);
-      setCartExpiry(); // Extend expiry when cart is updated
+      
+      // Extend expiry when cart is updated
+      await secureStorage.setItem(
+        CART_STORAGE_KEY, 
+        updatedCart.id, 
+        CART_EXPIRY_HOURS * 60 * 60 * 1000
+      );
       
       toast({
         title: 'Producto agregado',
@@ -98,7 +92,7 @@ export const useShopifyCart = () => {
       
       // If cart is invalid, try to reinitialize
       if (error instanceof Error && error.message.includes('no encontrado')) {
-        clearCartData();
+        await clearCartData();
         await initializeCart();
       }
     } finally {
@@ -113,7 +107,6 @@ export const useShopifyCart = () => {
       setIsLoading(true);
       
       if (quantity <= 0) {
-        // Remove item if quantity is 0 or less
         const updatedCart = await shopifyApi.updateCartLines(cart.id, [
           { id: lineId, quantity: 0 }
         ]);
@@ -127,15 +120,20 @@ export const useShopifyCart = () => {
           { id: lineId, quantity }
         ]);
         setCart(updatedCart);
-        setCartExpiry(); // Extend expiry when cart is updated
+        
+        // Extend expiry when cart is updated
+        await secureStorage.setItem(
+          CART_STORAGE_KEY, 
+          updatedCart.id, 
+          CART_EXPIRY_HOURS * 60 * 60 * 1000
+        );
       }
       
     } catch (error) {
       handleError(error, 'No se pudo actualizar la cantidad');
       
-      // If cart is invalid, try to reinitialize
       if (error instanceof Error && error.message.includes('no encontrado')) {
-        clearCartData();
+        await clearCartData();
         await initializeCart();
       }
     } finally {

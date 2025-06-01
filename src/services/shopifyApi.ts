@@ -1,101 +1,115 @@
 import { SHOPIFY_GRAPHQL_URL, shopifyConfig } from '@/config/shopify';
 import { ShopifyProduct, ShopifyCart, CartItem } from '@/types/shopify';
 import { shopifyAuth } from './shopifyAuth';
+import { InputValidator } from '@/utils/inputValidator';
+import { environment } from '@/config/environment';
 
-// Cache for API responses
-const cache = new Map<string, { data: any; timestamp: number; ttl: number }>();
-
-// Rate limiting
+// Enhanced rate limiting with per-endpoint limits
 const rateLimiter = {
   requests: new Map<string, number[]>(),
-  maxRequests: 100, // Max requests per minute
-  windowMs: 60 * 1000, // 1 minute window
+  limits: {
+    default: { maxRequests: 100, windowMs: 60 * 1000 },
+    products: { maxRequests: 200, windowMs: 60 * 1000 },
+    cart: { maxRequests: 50, windowMs: 60 * 1000 },
+  },
   
-  canMakeRequest(key: string = 'default'): boolean {
+  canMakeRequest(endpoint: string = 'default'): boolean {
+    const limit = this.limits[endpoint as keyof typeof this.limits] || this.limits.default;
     const now = Date.now();
-    const requests = this.requests.get(key) || [];
+    const requests = this.requests.get(endpoint) || [];
     
-    // Remove old requests outside the window
-    const validRequests = requests.filter(time => now - time < this.windowMs);
+    const validRequests = requests.filter(time => now - time < limit.windowMs);
     
-    if (validRequests.length >= this.maxRequests) {
+    if (validRequests.length >= limit.maxRequests) {
       return false;
     }
     
     validRequests.push(now);
-    this.requests.set(key, validRequests);
+    this.requests.set(endpoint, validRequests);
     return true;
   }
 };
 
-// Input validation and sanitization
-const validateAndSanitizeInput = (input: any): any => {
-  if (typeof input === 'string') {
-    // Remove potentially dangerous characters
-    return input.replace(/[<>'"&]/g, '');
+// Enhanced cache with TTL and size limits
+const cache = new Map<string, { data: any; timestamp: number; ttl: number }>();
+const MAX_CACHE_SIZE = 1000;
+
+const manageCache = () => {
+  if (cache.size > MAX_CACHE_SIZE) {
+    const entries = Array.from(cache.entries());
+    const sorted = entries.sort((a, b) => a[1].timestamp - b[1].timestamp);
+    const toDelete = sorted.slice(0, Math.floor(MAX_CACHE_SIZE * 0.2));
+    toDelete.forEach(([key]) => cache.delete(key));
   }
-  if (typeof input === 'object' && input !== null) {
-    const sanitized: any = {};
-    for (const [key, value] of Object.entries(input)) {
-      sanitized[key] = validateAndSanitizeInput(value);
-    }
-    return sanitized;
-  }
-  return input;
 };
 
 class ShopifyAPI {
-  private async graphqlRequest(query: string, variables: any = {}) {
+  private async graphqlRequest(query: string, variables: any = {}, endpoint: string = 'default') {
     // Rate limiting check
-    if (!rateLimiter.canMakeRequest()) {
+    if (!rateLimiter.canMakeRequest(endpoint)) {
       throw new Error('Rate limit exceeded. Please try again later.');
     }
 
-    // Sanitize input variables
-    const sanitizedVariables = validateAndSanitizeInput(variables);
+    // Enhanced input validation
+    const sanitizedVariables = InputValidator.validateApiInput(variables);
     
-    const cacheKey = `${query}-${JSON.stringify(sanitizedVariables)}`;
+    // Validate query structure
+    if (!query || typeof query !== 'string' || query.length > 10000) {
+      throw new Error('Invalid GraphQL query');
+    }
+
+    const cacheKey = `${query.substring(0, 100)}-${JSON.stringify(sanitizedVariables)}`;
     const now = Date.now();
     
-    // Check cache for GET-like operations (products)
-    if (query.includes('query') && cache.has(cacheKey)) {
+    // Check cache for read operations
+    if (query.trimStart().startsWith('query') && cache.has(cacheKey)) {
       const cached = cache.get(cacheKey)!;
       if (now - cached.timestamp < cached.ttl) {
         return cached.data;
       }
     }
 
-    // Get authentication token
-    const session = shopifyAuth.getSession();
-    const accessToken = session?.accessToken || shopifyConfig.storefrontAccessToken;
+    // Get authentication - no client-side session storage
+    const accessToken = shopifyConfig.storefrontAccessToken;
+
+    // Security headers
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'X-Shopify-Storefront-Access-Token': accessToken,
+      'Accept': 'application/json',
+      'Cache-Control': 'no-cache',
+    };
+
+    // Add CSRF protection in production
+    if (environment.isProduction) {
+      headers['X-Requested-With'] = 'XMLHttpRequest';
+    }
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), environment.apiTimeout);
+
       const response = await fetch(SHOPIFY_GRAPHQL_URL, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Shopify-Storefront-Access-Token': accessToken,
-          'User-Agent': 'Shopify-Store-App/1.0',
-          'Accept': 'application/json',
-          'Cache-Control': 'no-cache',
-        },
+        headers,
         body: JSON.stringify({
           query,
           variables: sanitizedVariables,
         }),
+        signal: controller.signal,
       });
 
+      clearTimeout(timeoutId);
+
+      // Enhanced error handling
       if (!response.ok) {
-        // Enhanced error handling with proper security considerations
         switch (response.status) {
           case 401:
-            // Clear invalid session
             shopifyAuth.clearSession();
-            throw new Error('Error de autenticación. Por favor, vuelve a autorizar la aplicación.');
+            throw new Error('Error de autenticación. Por favor, recarga la página.');
           case 403:
-            throw new Error('Acceso denegado. Verifica los permisos de la aplicación.');
+            throw new Error('Acceso denegado. Verifica la configuración.');
           case 429:
-            // Extract retry-after header if available
             const retryAfter = response.headers.get('Retry-After');
             const message = retryAfter 
               ? `Demasiadas solicitudes. Intenta de nuevo en ${retryAfter} segundos.`
@@ -120,333 +134,164 @@ class ShopifyAPI {
       if (result.errors) {
         console.error('GraphQL errors:', result.errors);
         
-        // Handle specific GraphQL errors
         const firstError = result.errors[0];
         if (firstError?.extensions?.code === 'ACCESS_DENIED') {
           shopifyAuth.clearSession();
-          throw new Error('Sesión expirada. Por favor, vuelve a autorizar la aplicación.');
+          throw new Error('Sesión expirada. Por favor, recarga la página.');
         }
         
-        // Don't expose GraphQL errors to users
         throw new Error('Error procesando la solicitud.');
       }
 
-      // Security: Validate response structure
+      // Validate response structure
       if (!result.data || typeof result.data !== 'object') {
         throw new Error('Respuesta inválida del servidor.');
       }
 
-      // Cache successful responses for queries
-      if (query.includes('query')) {
+      // Cache successful read operations
+      if (query.trimStart().startsWith('query')) {
         cache.set(cacheKey, {
           data: result.data,
           timestamp: now,
           ttl: 5 * 60 * 1000 // 5 minutes
         });
+        manageCache();
       }
 
       return result.data;
     } catch (error) {
-      // Enhanced error logging (without exposing sensitive data)
-      console.error('API Request failed:', {
-        query: query.substring(0, 100), // Log only first 100 chars
-        timestamp: new Date().toISOString(),
-        error: error instanceof Error ? error.message : 'Unknown error'
-      });
-
       if (error instanceof TypeError && error.message.includes('fetch')) {
         throw new Error('Error de conexión. Verifica tu internet y intenta de nuevo.');
+      }
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        throw new Error('Tiempo de espera agotado. Intenta de nuevo.');
       }
       throw error;
     }
   }
 
   async getProducts(first = 20, query?: string) {
-    try {
-      // Validate input parameters
-      if (first < 1 || first > 250) {
-        throw new Error('Invalid product count requested');
+    // Enhanced input validation
+    if (!Number.isInteger(first) || first < 1 || first > 250) {
+      throw new Error('Invalid product count requested');
+    }
+    
+    if (query && !InputValidator.validateSearchQuery(query)) {
+      throw new Error('Invalid search query');
+    }
+    
+    const graphqlQuery = `
+      query getProducts($first: Int!, $query: String) {
+        products(first: $first, query: $query) {
+          edges {
+            node {
+              id
+              title
+              description
+              handle
+              productType
+              tags
+              images(first: 5) {
+                edges {
+                  node {
+                    id
+                    url
+                    altText
+                  }
+                }
+              }
+              variants(first: 10) {
+                edges {
+                  node {
+                    id
+                    title
+                    price {
+                      amount
+                      currencyCode
+                    }
+                    compareAtPrice {
+                      amount
+                      currencyCode
+                    }
+                    availableForSale
+                    quantityAvailable
+                  }
+                }
+              }
+            }
+          }
+        }
       }
-      
-      const graphqlQuery = `
-        query getProducts($first: Int!, $query: String) {
-          products(first: $first, query: $query) {
+    `;
+
+    const data = await this.graphqlRequest(graphqlQuery, { first, query }, 'products');
+    
+    if (!data.products || !data.products.edges) {
+      return [];
+    }
+
+    return data.products.edges.map((edge: any) => edge.node) as ShopifyProduct[];
+  }
+
+  async getProductByHandle(handle: string) {
+    if (!InputValidator.validateProductHandle(handle)) {
+      throw new Error('Invalid product handle');
+    }
+
+    const graphqlQuery = `
+      query getProductByHandle($handle: String!) {
+        productByHandle(handle: $handle) {
+          id
+          title
+          description
+          handle
+          productType
+          tags
+          images(first: 10) {
+            edges {
+              node {
+                id
+                url
+                altText
+              }
+            }
+          }
+          variants(first: 20) {
             edges {
               node {
                 id
                 title
-                description
-                handle
-                productType
-                tags
-                images(first: 5) {
-                  edges {
-                    node {
-                      id
-                      url
-                      altText
-                    }
-                  }
+                price {
+                  amount
+                  currencyCode
                 }
-                variants(first: 10) {
-                  edges {
-                    node {
-                      id
-                      title
-                      price {
-                        amount
-                        currencyCode
-                      }
-                      compareAtPrice {
-                        amount
-                        currencyCode
-                      }
-                      availableForSale
-                      quantityAvailable
-                    }
-                  }
+                compareAtPrice {
+                  amount
+                  currencyCode
                 }
+                availableForSale
+                quantityAvailable
               }
             }
           }
         }
-      `;
-
-      const data = await this.graphqlRequest(graphqlQuery, { first, query });
-      
-      if (!data.products || !data.products.edges) {
-        console.warn('No products found in response');
-        return [];
       }
+    `;
 
-      return data.products.edges.map((edge: any) => edge.node) as ShopifyProduct[];
-    } catch (error) {
-      console.error('Error fetching products:', error);
-      throw error;
+    const data = await this.graphqlRequest(graphqlQuery, { handle }, 'products');
+    
+    if (!data.productByHandle) {
+      throw new Error(`Producto no encontrado`);
     }
-  }
 
-  async getProductByHandle(handle: string) {
-    try {
-      // Validate handle
-      if (!handle || typeof handle !== 'string' || handle.length > 255) {
-        throw new Error('Invalid product handle');
-      }
-
-      const graphqlQuery = `
-        query getProductByHandle($handle: String!) {
-          productByHandle(handle: $handle) {
-            id
-            title
-            description
-            handle
-            productType
-            tags
-            images(first: 10) {
-              edges {
-                node {
-                  id
-                  url
-                  altText
-                }
-              }
-            }
-            variants(first: 20) {
-              edges {
-                node {
-                  id
-                  title
-                  price {
-                    amount
-                    currencyCode
-                  }
-                  compareAtPrice {
-                    amount
-                    currencyCode
-                  }
-                  availableForSale
-                  quantityAvailable
-                }
-              }
-            }
-          }
-        }
-      `;
-
-      const data = await this.graphqlRequest(graphqlQuery, { handle });
-      
-      if (!data.productByHandle) {
-        throw new Error(`Producto no encontrado`);
-      }
-
-      return data.productByHandle as ShopifyProduct;
-    } catch (error) {
-      console.error('Error fetching product by handle:', error);
-      throw error;
-    }
+    return data.productByHandle as ShopifyProduct;
   }
 
   async createCart() {
-    try {
-      const graphqlQuery = `
-        mutation cartCreate {
-          cartCreate {
-            cart {
-              id
-              checkoutUrl
-              totalQuantity
-              cost {
-                totalAmount {
-                  amount
-                  currencyCode
-                }
-              }
-              lines(first: 100) {
-                edges {
-                  node {
-                    id
-                    quantity
-                    merchandise {
-                      ... on ProductVariant {
-                        id
-                        title
-                        product {
-                          title
-                          handle
-                        }
-                        image {
-                          url
-                          altText
-                        }
-                        price {
-                          amount
-                          currencyCode
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-            userErrors {
-              field
-              message
-            }
-          }
-        }
-      `;
-
-      const data = await this.graphqlRequest(graphqlQuery);
-      
-      if (data.cartCreate.userErrors.length > 0) {
-        console.error('Cart creation errors:', data.cartCreate.userErrors);
-        throw new Error('No se pudo crear el carrito');
-      }
-
-      return data.cartCreate.cart as ShopifyCart;
-    } catch (error) {
-      console.error('Error creating cart:', error);
-      throw error;
-    }
-  }
-
-  async addToCart(cartId: string, items: CartItem[]) {
-    try {
-      // Validate inputs
-      if (!cartId || typeof cartId !== 'string') {
-        throw new Error('Invalid cart ID');
-      }
-      
-      if (!Array.isArray(items) || items.length === 0) {
-        throw new Error('Invalid items array');
-      }
-
-      // Validate each item
-      for (const item of items) {
-        if (!item.merchandiseId || typeof item.merchandiseId !== 'string') {
-          throw new Error('Invalid merchandise ID');
-        }
-        if (!Number.isInteger(item.quantity) || item.quantity < 1 || item.quantity > 100) {
-          throw new Error('Invalid quantity');
-        }
-      }
-
-      const graphqlQuery = `
-        mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
-          cartLinesAdd(cartId: $cartId, lines: $lines) {
-            cart {
-              id
-              checkoutUrl
-              totalQuantity
-              cost {
-                totalAmount {
-                  amount
-                  currencyCode
-                }
-              }
-              lines(first: 100) {
-                edges {
-                  node {
-                    id
-                    quantity
-                    merchandise {
-                      ... on ProductVariant {
-                        id
-                        title
-                        product {
-                          title
-                          handle
-                        }
-                        image {
-                          url
-                          altText
-                        }
-                        price {
-                          amount
-                          currencyCode
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-            userErrors {
-              field
-              message
-            }
-          }
-        }
-      `;
-
-      const lines = items.map(item => ({
-        merchandiseId: item.merchandiseId,
-        quantity: item.quantity,
-      }));
-
-      const data = await this.graphqlRequest(graphqlQuery, { cartId, lines });
-      
-      if (data.cartLinesAdd.userErrors.length > 0) {
-        console.error('Add to cart errors:', data.cartLinesAdd.userErrors);
-        throw new Error('No se pudo agregar al carrito');
-      }
-
-      return data.cartLinesAdd.cart as ShopifyCart;
-    } catch (error) {
-      console.error('Error adding to cart:', error);
-      throw error;
-    }
-  }
-
-  async getCart(cartId: string) {
-    try {
-      if (!cartId || typeof cartId !== 'string') {
-        throw new Error('Invalid cart ID');
-      }
-
-      const graphqlQuery = `
-        query getCart($cartId: ID!) {
-          cart(id: $cartId) {
+    const graphqlQuery = `
+      mutation cartCreate {
+        cartCreate {
+          cart {
             id
             checkoutUrl
             totalQuantity
@@ -483,102 +328,235 @@ class ShopifyAPI {
               }
             }
           }
+          userErrors {
+            field
+            message
+          }
         }
-      `;
-
-      const data = await this.graphqlRequest(graphqlQuery, { cartId });
-      
-      if (!data.cart) {
-        throw new Error('Carrito no encontrado o expirado');
       }
+    `;
 
-      return data.cart as ShopifyCart;
-    } catch (error) {
-      console.error('Error fetching cart:', error);
-      throw error;
+    const data = await this.graphqlRequest(graphqlQuery, {}, 'cart');
+    
+    if (data.cartCreate.userErrors.length > 0) {
+      throw new Error('No se pudo crear el carrito');
     }
+
+    return data.cartCreate.cart as ShopifyCart;
   }
 
-  async updateCartLines(cartId: string, lines: Array<{ id: string; quantity: number }>) {
-    try {
-      if (!cartId || typeof cartId !== 'string') {
-        throw new Error('Invalid cart ID');
-      }
+  async addToCart(cartId: string, items: CartItem[]) {
+    // Enhanced validation
+    if (!InputValidator.validateCartId(cartId)) {
+      throw new Error('Invalid cart ID');
+    }
+    
+    if (!Array.isArray(items) || items.length === 0 || items.length > 100) {
+      throw new Error('Invalid items array');
+    }
 
-      if (!Array.isArray(lines) || lines.length === 0) {
-        throw new Error('Invalid lines array');
+    // Validate each item
+    for (const item of items) {
+      if (!InputValidator.validateVariantId(item.merchandiseId)) {
+        throw new Error('Invalid merchandise ID');
       }
-
-      // Validate each line
-      for (const line of lines) {
-        if (!line.id || typeof line.id !== 'string') {
-          throw new Error('Invalid line ID');
-        }
-        if (!Number.isInteger(line.quantity) || line.quantity < 0 || line.quantity > 100) {
-          throw new Error('Invalid quantity');
-        }
+      if (!InputValidator.validateQuantity(item.quantity)) {
+        throw new Error('Invalid quantity');
       }
+    }
 
-      const graphqlQuery = `
-        mutation cartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
-          cartLinesUpdate(cartId: $cartId, lines: $lines) {
-            cart {
-              id
-              checkoutUrl
-              totalQuantity
-              cost {
-                totalAmount {
-                  amount
-                  currencyCode
-                }
+    const graphqlQuery = `
+      mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
+        cartLinesAdd(cartId: $cartId, lines: $lines) {
+          cart {
+            id
+            checkoutUrl
+            totalQuantity
+            cost {
+              totalAmount {
+                amount
+                currencyCode
               }
-              lines(first: 100) {
-                edges {
-                  node {
-                    id
-                    quantity
-                    merchandise {
-                      ... on ProductVariant {
-                        id
+            }
+            lines(first: 100) {
+              edges {
+                node {
+                  id
+                  quantity
+                  merchandise {
+                    ... on ProductVariant {
+                      id
+                      title
+                      product {
                         title
-                        product {
-                          title
-                          handle
-                        }
-                        image {
-                          url
-                          altText
-                        }
-                        price {
-                          amount
-                          currencyCode
-                        }
+                        handle
+                      }
+                      image {
+                        url
+                        altText
+                      }
+                      price {
+                        amount
+                        currencyCode
                       }
                     }
                   }
                 }
               }
             }
-            userErrors {
-              field
-              message
+          }
+          userErrors {
+            field
+            message
+          }
+        }
+      }
+    `;
+
+    const lines = items.map(item => ({
+      merchandiseId: item.merchandiseId,
+      quantity: item.quantity,
+    }));
+
+    const data = await this.graphqlRequest(graphqlQuery, { cartId, lines }, 'cart');
+    
+    if (data.cartLinesAdd.userErrors.length > 0) {
+      throw new Error('No se pudo agregar al carrito');
+    }
+
+    return data.cartLinesAdd.cart as ShopifyCart;
+  }
+
+  async getCart(cartId: string) {
+    if (!InputValidator.validateCartId(cartId)) {
+      throw new Error('Invalid cart ID');
+    }
+
+    const graphqlQuery = `
+      query getCart($cartId: ID!) {
+        cart(id: $cartId) {
+          id
+          checkoutUrl
+          totalQuantity
+          cost {
+            totalAmount {
+              amount
+              currencyCode
+            }
+          }
+          lines(first: 100) {
+            edges {
+              node {
+                id
+                quantity
+                merchandise {
+                  ... on ProductVariant {
+                    id
+                    title
+                    product {
+                      title
+                      handle
+                    }
+                    image {
+                      url
+                      altText
+                    }
+                    price {
+                      amount
+                      currencyCode
+                    }
+                  }
+                }
+              }
             }
           }
         }
-      `;
-
-      const data = await this.graphqlRequest(graphqlQuery, { cartId, lines });
-      
-      if (data.cartLinesUpdate.userErrors.length > 0) {
-        console.error('Update cart errors:', data.cartLinesUpdate.userErrors);
-        throw new Error('No se pudo actualizar el carrito');
       }
+    `;
 
-      return data.cartLinesUpdate.cart as ShopifyCart;
-    } catch (error) {
-      console.error('Error updating cart:', error);
-      throw error;
+    const data = await this.graphqlRequest(graphqlQuery, { cartId }, 'cart');
+    
+    if (!data.cart) {
+      throw new Error('Carrito no encontrado o expirado');
     }
+
+    return data.cart as ShopifyCart;
+  }
+
+  async updateCartLines(cartId: string, lines: Array<{ id: string; quantity: number }>) {
+    if (!InputValidator.validateCartId(cartId)) {
+      throw new Error('Invalid cart ID');
+    }
+
+    if (!Array.isArray(lines) || lines.length === 0 || lines.length > 100) {
+      throw new Error('Invalid lines array');
+    }
+
+    // Validate each line
+    for (const line of lines) {
+      if (!InputValidator.validateLineId(line.id)) {
+        throw new Error('Invalid line ID');
+      }
+      if (!InputValidator.validateQuantity(line.quantity)) {
+        throw new Error('Invalid quantity');
+      }
+    }
+
+    const graphqlQuery = `
+      mutation cartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
+        cartLinesUpdate(cartId: $cartId, lines: $lines) {
+          cart {
+            id
+            checkoutUrl
+            totalQuantity
+            cost {
+              totalAmount {
+                amount
+                currencyCode
+              }
+            }
+            lines(first: 100) {
+              edges {
+                node {
+                  id
+                  quantity
+                  merchandise {
+                    ... on ProductVariant {
+                      id
+                      title
+                      product {
+                        title
+                        handle
+                      }
+                      image {
+                        url
+                        altText
+                      }
+                      price {
+                        amount
+                        currencyCode
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+          userErrors {
+            field
+            message
+          }
+        }
+      }
+    `;
+
+    const data = await this.graphqlRequest(graphqlQuery, { cartId, lines }, 'cart');
+    
+    if (data.cartLinesUpdate.userErrors.length > 0) {
+      throw new Error('No se pudo actualizar el carrito');
+    }
+
+    return data.cartLinesUpdate.cart as ShopifyCart;
   }
 }
 
