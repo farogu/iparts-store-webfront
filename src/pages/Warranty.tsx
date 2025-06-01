@@ -14,11 +14,11 @@ const Warranty = () => {
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">Garantía de Calidad</h2>
             <p>
-              En iParts Store, garantizamos la calidad de todos nuestros productos.
-              Todas nuestras piezas y accesorios para iPhone cuentan con una garantía contra defectos
-              de fabricación y fallos de funcionamiento.
+  En iParts Store, garantizamos la calidad de todos nuestros productos. <br />
+  Todas nuestras piezas y accesorios para iPhone cuentan con una garantía contra defectos
+  de fabricación y fallos de funcionamiento.
+</p>
 
-             Cuando aplique, también incluyen la garantía del fabricante correspondiente.
             </p>
           </section>
 
@@ -37,7 +37,7 @@ const Warranty = () => {
               <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
                 <h3 className="text-xl font-semibold text-blue-800 mb-3">Productos Compatibles y Accesorios</h3>
                 <ul className="space-y-2 text-blue-700">
-                  <li>• Garantía de 6 meses</li>
+                  <li>• Garantía de 30 días</li>
                   <li>• Defectos de fabricación</li>
                   <li>• Soporte técnico incluido</li>
                   <li>• Reemplazo gratuito</li>
@@ -131,6 +131,19 @@ const Warranty = () => {
               </ul>
             </div>
           </section>
+
+         <section className="bg-yellow-50 border-l-4 border-yellow-400 p-6 my-8 rounded-md shadow-sm">
+      <h2 className="text-lg font-semibold text-yellow-800 mb-2">
+        ⚠️ Aviso importante sobre garantías
+      </h2>
+      <p className="text-gray-700">
+        Algunos productos como <span className="font-semibold">carcazas</span>, <span className="font-semibold">micas de cristal</span> y <span className="font-semibold">micas de hidrogel</span> 
+        <span className="font-semibold text-red-600"> no cuentan con garantía</span> debido a su naturaleza frágil y uso inmediato tras la instalación.
+      </p>
+      <p className="text-gray-700 mt-2">
+        Te recomendamos revisar bien el producto antes de abrirlo o instalarlo. Si tienes dudas, contáctanos antes de completar tu compra.
+      </p>
+    </section>
 
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">Instalación y Soporte</h2>
