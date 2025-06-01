@@ -1,4 +1,3 @@
-
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 
@@ -14,11 +13,9 @@ const Warranty = () => {
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">Garantía de Calidad</h2>
             <p>
-  En iParts Store, garantizamos la calidad de todos nuestros productos. <br />
-  Todas nuestras piezas y accesorios para iPhone cuentan con una garantía contra defectos
-  de fabricación y fallos de funcionamiento.
-</p>
-
+              En iParts Store, garantizamos la calidad de todos nuestros productos. <br />
+              Todas nuestras piezas y accesorios para iPhone cuentan con una garantía contra defectos
+              de fabricación y fallos de funcionamiento.
             </p>
           </section>
 
