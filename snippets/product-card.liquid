@@ -1,0 +1,14 @@
+
+<div class="product-card" data-product-id="{{ product.id }}">
+  <a href="{{ product.url }}">
+    {% if product.featured_image %}
+      <img src="{{ product.featured_image | img_url: '300x300' }}" alt="{{ product.title }}">
+    {% endif %}
+    <h3>{{ product.title }}</h3>
+    <p class="price">{{ product.price | money }}</p>
+    
+    {% if product.metafields.custom.sunsky_sku %}
+      <span class="sunsky-badge">Sunsky</span>
+    {% endif %}
+  </a>
+</div>

@@ -1,18 +1,34 @@
 
-{% comment %}
-  Template principal para la página de inicio con integración de Sunsky API
-{% endcomment %}
+<div class="hero">
+  <div class="container">
+    <h1>Repuestos iPhone de Calidad</h1>
+    <p>Encuentra las mejores piezas para tu iPhone</p>
+  </div>
+</div>
 
-{% section 'sunsky-hero' %}
-{% section 'sunsky-model-selector' %}
-{% section 'sunsky-featured-products' %}
-{% section 'sunsky-testimonials' %}
+<div id="model-selector" class="model-selector-section">
+  <div class="container">
+    <h2>Selecciona tu iPhone</h2>
+    <div class="model-grid">
+      {% assign models = "15,14,13,12" | split: "," %}
+      {% for model in models %}
+        <div class="model-item" data-model="iphone-{{ model }}">
+          <h3>iPhone {{ model }}</h3>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
 
-<script>
-  // Inicializar la aplicación Sunsky al cargar la página
-  document.addEventListener('DOMContentLoaded', function() {
-    if (window.SunskyApp) {
-      window.SunskyApp.init();
-    }
-  });
-</script>
+<div id="products-section">
+  <div class="container">
+    <h2>Productos Destacados</h2>
+    <div id="product-grid" class="product-grid">
+      {% for product in collections.all.products limit: 8 %}
+        {% render 'product-card', product: product %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<div class="loader" style="display: none;">Cargando...</div>

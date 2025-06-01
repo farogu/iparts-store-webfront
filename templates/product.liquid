@@ -1,62 +1,29 @@
 
-{% comment %}
-  Template para productos individuales con integración Sunsky
-{% endcomment %}
-
-{{ 'section-product.css' | asset_url | stylesheet_tag }}
-{{ 'component-accordion.css' | asset_url | stylesheet_tag }}
-{{ 'component-price.css' | asset_url | stylesheet_tag }}
-{{ 'component-slider.css' | asset_url | stylesheet_tag }}
-{{ 'component-rating.css' | asset_url | stylesheet_tag }}
-{{ 'component-deferred-media.css' | asset_url | stylesheet_tag }}
-
-<script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
-
-{%- assign first_3d_model = product.media | where: "media_type", "model" | first -%}
-{%- if first_3d_model -%}
-  {{ 'component-product-model.css' | asset_url | stylesheet_tag }}
-  <script type="application/json" id="ProductJSON-{{ product.id }}">
-    {{ product.media | where: 'media_type', 'model' | json }}
-  </script>
-  <script src="{{ 'product-model.js' | asset_url }}" defer></script>
-{%- endif -%}
-
-{% section 'sunsky-product-hero' %}
-{% section 'sunsky-compatibility-check' %}
-{% section 'sunsky-product-recommendations' %}
-
-<div class="sunsky-product-wrapper" data-product-id="{{ product.id }}">
-  <div class="sunsky-product-info">
-    {% if product.metafields.custom.sunsky_sku %}
-      <div class="sunsky-integration-status">
-        <span class="badge badge--success">Sincronizado con Sunsky</span>
-        <span class="sunsky-sku">SKU: {{ product.metafields.custom.sunsky_sku }}</span>
+<div class="product-page">
+  <div class="container">
+    <div class="product-details">
+      <div class="product-images">
+        {% if product.featured_image %}
+          <img src="{{ product.featured_image | img_url: '600x600' }}" alt="{{ product.title }}">
+        {% endif %}
       </div>
-    {% endif %}
-    
-    {% if product.metafields.custom.compatible_models %}
-      <div class="compatibility-info">
-        <h4>Compatible con:</h4>
-        <div class="model-tags">
-          {% assign models = product.metafields.custom.compatible_models | split: ',' %}
-          {% for model in models %}
-            <span class="model-tag">{{ model | strip }}</span>
-          {% endfor %}
-        </div>
+      
+      <div class="product-info">
+        <h1>{{ product.title }}</h1>
+        <div class="price">{{ product.price | money }}</div>
+        
+        {% if product.metafields.custom.sunsky_sku %}
+          <div class="sunsky-info">
+            <span class="badge">Sunsky</span>
+            <span>SKU: {{ product.metafields.custom.sunsky_sku }}</span>
+          </div>
+        {% endif %}
+        
+        {% form 'product', product %}
+          <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+          <button type="submit" class="btn-primary">Agregar al carrito</button>
+        {% endform %}
       </div>
-    {% endif %}
+    </div>
   </div>
 </div>
-
-<script>
-  // Inicializar funcionalidades específicas del producto
-  document.addEventListener('DOMContentLoaded', function() {
-    if (window.SunskyProduct) {
-      window.SunskyProduct.init({
-        productId: {{ product.id | json }},
-        handle: {{ product.handle | json }},
-        variants: {{ product.variants | json }}
-      });
-    }
-  });
-</script>
