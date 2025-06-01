@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { ShoppingCart, Eye } from 'lucide-react';
 import { ShopifyProduct } from '@/types/shopify';
 import { useShopifyCart } from '@/hooks/useShopifyCart';
+import { stripHTML } from '@/utils/sanitizer';
 import OptimizedImage from './OptimizedImage';
 
 interface ProductCardProps {
@@ -24,7 +25,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
   const mainImage = product.images.edges[0]?.node.url || '/placeholder.svg';
 
   const handleViewProduct = () => {
-    navigate(`/product/${product.handle}`);
+    navigate(`/product/${encodeURIComponent(product.handle)}`);
   };
 
   const handleAddToCart = async (e: React.MouseEvent) => {
@@ -40,6 +41,11 @@ const ProductCard = ({ product }: ProductCardProps) => {
   const discountPercentage = compareAtPrice && compareAtPrice > price 
     ? Math.round((1 - price / compareAtPrice) * 100) 
     : null;
+
+  // Safely extract and limit description text
+  const safeDescription = product.description 
+    ? stripHTML(product.description).substring(0, 100) + '...'
+    : '';
 
   return (
     <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer h-full flex flex-col">
@@ -77,9 +83,9 @@ const ProductCard = ({ product }: ProductCardProps) => {
             {product.title}
           </h3>
           
-          {product.description && (
+          {safeDescription && (
             <p className="text-sm text-gray-600 line-clamp-2 mb-3">
-              {product.description.replace(/<[^>]*>/g, '').substring(0, 100)}...
+              {safeDescription}
             </p>
           )}
 

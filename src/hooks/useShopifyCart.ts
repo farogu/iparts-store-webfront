@@ -1,9 +1,9 @@
-
 import { useState, useEffect } from 'react';
 import { shopifyApi } from '@/services/shopifyApi';
 import { ShopifyCart, CartItem } from '@/types/shopify';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { useToast } from '@/hooks/use-toast';
+import { secureStorage } from '@/utils/secureStorage';
 
 const CART_STORAGE_KEY = 'shopify-cart-id';
 const CART_EXPIRY_KEY = 'shopify-cart-expiry';
@@ -17,7 +17,7 @@ export const useShopifyCart = () => {
 
   // Check if cart is expired
   const isCartExpired = () => {
-    const expiry = localStorage.getItem(CART_EXPIRY_KEY);
+    const expiry = secureStorage.getItem(CART_EXPIRY_KEY);
     if (!expiry) return true;
     return Date.now() > parseInt(expiry);
   };
@@ -25,13 +25,13 @@ export const useShopifyCart = () => {
   // Set cart expiry
   const setCartExpiry = () => {
     const expiry = Date.now() + (CART_EXPIRY_HOURS * 60 * 60 * 1000);
-    localStorage.setItem(CART_EXPIRY_KEY, expiry.toString());
+    secureStorage.setItem(CART_EXPIRY_KEY, expiry.toString());
   };
 
   // Clear cart data
   const clearCartData = () => {
-    localStorage.removeItem(CART_STORAGE_KEY);
-    localStorage.removeItem(CART_EXPIRY_KEY);
+    secureStorage.removeItem(CART_STORAGE_KEY);
+    secureStorage.removeItem(CART_EXPIRY_KEY);
     setCart(null);
   };
 
@@ -43,7 +43,7 @@ export const useShopifyCart = () => {
     try {
       setIsLoading(true);
       
-      const existingCartId = localStorage.getItem(CART_STORAGE_KEY);
+      const existingCartId = secureStorage.getItem(CART_STORAGE_KEY);
       
       // Check if we have a cart ID and it's not expired
       if (existingCartId && !isCartExpired()) {
@@ -64,7 +64,7 @@ export const useShopifyCart = () => {
       // Create new cart
       const newCart = await shopifyApi.createCart();
       setCart(newCart);
-      localStorage.setItem(CART_STORAGE_KEY, newCart.id);
+      secureStorage.setItem(CART_STORAGE_KEY, newCart.id);
       setCartExpiry();
       console.log('Nuevo carrito creado:', newCart.id);
       

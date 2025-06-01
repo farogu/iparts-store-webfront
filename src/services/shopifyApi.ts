@@ -4,9 +4,56 @@ import { ShopifyProduct, ShopifyCart, CartItem } from '@/types/shopify';
 // Cache for API responses
 const cache = new Map<string, { data: any; timestamp: number; ttl: number }>();
 
+// Rate limiting
+const rateLimiter = {
+  requests: new Map<string, number[]>(),
+  maxRequests: 100, // Max requests per minute
+  windowMs: 60 * 1000, // 1 minute window
+  
+  canMakeRequest(key: string = 'default'): boolean {
+    const now = Date.now();
+    const requests = this.requests.get(key) || [];
+    
+    // Remove old requests outside the window
+    const validRequests = requests.filter(time => now - time < this.windowMs);
+    
+    if (validRequests.length >= this.maxRequests) {
+      return false;
+    }
+    
+    validRequests.push(now);
+    this.requests.set(key, validRequests);
+    return true;
+  }
+};
+
+// Input validation and sanitization
+const validateAndSanitizeInput = (input: any): any => {
+  if (typeof input === 'string') {
+    // Remove potentially dangerous characters
+    return input.replace(/[<>'"&]/g, '');
+  }
+  if (typeof input === 'object' && input !== null) {
+    const sanitized: any = {};
+    for (const [key, value] of Object.entries(input)) {
+      sanitized[key] = validateAndSanitizeInput(value);
+    }
+    return sanitized;
+  }
+  return input;
+};
+
 class ShopifyAPI {
   private async graphqlRequest(query: string, variables: any = {}) {
-    const cacheKey = `${query}-${JSON.stringify(variables)}`;
+    // Rate limiting check
+    if (!rateLimiter.canMakeRequest()) {
+      throw new Error('Rate limit exceeded. Please try again later.');
+    }
+
+    // Sanitize input variables
+    const sanitizedVariables = validateAndSanitizeInput(variables);
+    
+    const cacheKey = `${query}-${JSON.stringify(sanitizedVariables)}`;
     const now = Date.now();
     
     // Check cache for GET-like operations (products)
@@ -23,29 +70,34 @@ class ShopifyAPI {
         headers: {
           'Content-Type': 'application/json',
           'X-Shopify-Storefront-Access-Token': shopifyConfig.storefrontAccessToken,
+          'User-Agent': 'Shopify-Store-App/1.0',
         },
         body: JSON.stringify({
           query,
-          variables,
+          variables: sanitizedVariables,
         }),
       });
 
       if (!response.ok) {
+        // Don't expose internal server details
         if (response.status === 401) {
-          throw new Error('Token de acceso inválido. Verifica tu configuración de Shopify.');
+          throw new Error('Error de autenticación con Shopify.');
         } else if (response.status === 429) {
           throw new Error('Demasiadas solicitudes. Intenta de nuevo en unos momentos.');
         } else if (response.status >= 500) {
-          throw new Error('Error del servidor de Shopify. Intenta de nuevo más tarde.');
+          throw new Error('Servicio temporalmente no disponible.');
+        } else if (response.status === 404) {
+          throw new Error('Recurso no encontrado.');
         }
-        throw new Error(`Error HTTP ${response.status}: ${response.statusText}`);
+        throw new Error('Error de conexión con el servicio.');
       }
 
       const result = await response.json();
       
       if (result.errors) {
-        const errorMessage = result.errors.map((e: any) => e.message).join(', ');
-        throw new Error(`Error de GraphQL: ${errorMessage}`);
+        console.error('GraphQL errors:', result.errors);
+        // Don't expose GraphQL errors to users
+        throw new Error('Error procesando la solicitud.');
       }
 
       // Cache successful responses for queries
@@ -68,6 +120,11 @@ class ShopifyAPI {
 
   async getProducts(first = 20, query?: string) {
     try {
+      // Validate input parameters
+      if (first < 1 || first > 250) {
+        throw new Error('Invalid product count requested');
+      }
+      
       const graphqlQuery = `
         query getProducts($first: Int!, $query: String) {
           products(first: $first, query: $query) {
@@ -128,6 +185,11 @@ class ShopifyAPI {
 
   async getProductByHandle(handle: string) {
     try {
+      // Validate handle
+      if (!handle || typeof handle !== 'string' || handle.length > 255) {
+        throw new Error('Invalid product handle');
+      }
+
       const graphqlQuery = `
         query getProductByHandle($handle: String!) {
           productByHandle(handle: $handle) {
@@ -171,7 +233,7 @@ class ShopifyAPI {
       const data = await this.graphqlRequest(graphqlQuery, { handle });
       
       if (!data.productByHandle) {
-        throw new Error(`Producto con handle "${handle}" no encontrado`);
+        throw new Error(`Producto no encontrado`);
       }
 
       return data.productByHandle as ShopifyProduct;
@@ -234,8 +296,8 @@ class ShopifyAPI {
       const data = await this.graphqlRequest(graphqlQuery);
       
       if (data.cartCreate.userErrors.length > 0) {
-        const errorMessage = data.cartCreate.userErrors.map((e: any) => e.message).join(', ');
-        throw new Error(`Error al crear carrito: ${errorMessage}`);
+        console.error('Cart creation errors:', data.cartCreate.userErrors);
+        throw new Error('No se pudo crear el carrito');
       }
 
       return data.cartCreate.cart as ShopifyCart;
@@ -247,6 +309,25 @@ class ShopifyAPI {
 
   async addToCart(cartId: string, items: CartItem[]) {
     try {
+      // Validate inputs
+      if (!cartId || typeof cartId !== 'string') {
+        throw new Error('Invalid cart ID');
+      }
+      
+      if (!Array.isArray(items) || items.length === 0) {
+        throw new Error('Invalid items array');
+      }
+
+      // Validate each item
+      for (const item of items) {
+        if (!item.merchandiseId || typeof item.merchandiseId !== 'string') {
+          throw new Error('Invalid merchandise ID');
+        }
+        if (!Number.isInteger(item.quantity) || item.quantity < 1 || item.quantity > 100) {
+          throw new Error('Invalid quantity');
+        }
+      }
+
       const graphqlQuery = `
         mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
           cartLinesAdd(cartId: $cartId, lines: $lines) {
@@ -303,8 +384,8 @@ class ShopifyAPI {
       const data = await this.graphqlRequest(graphqlQuery, { cartId, lines });
       
       if (data.cartLinesAdd.userErrors.length > 0) {
-        const errorMessage = data.cartLinesAdd.userErrors.map((e: any) => e.message).join(', ');
-        throw new Error(`Error al agregar al carrito: ${errorMessage}`);
+        console.error('Add to cart errors:', data.cartLinesAdd.userErrors);
+        throw new Error('No se pudo agregar al carrito');
       }
 
       return data.cartLinesAdd.cart as ShopifyCart;
@@ -316,6 +397,10 @@ class ShopifyAPI {
 
   async getCart(cartId: string) {
     try {
+      if (!cartId || typeof cartId !== 'string') {
+        throw new Error('Invalid cart ID');
+      }
+
       const graphqlQuery = `
         query getCart($cartId: ID!) {
           cart(id: $cartId) {
@@ -373,6 +458,24 @@ class ShopifyAPI {
 
   async updateCartLines(cartId: string, lines: Array<{ id: string; quantity: number }>) {
     try {
+      if (!cartId || typeof cartId !== 'string') {
+        throw new Error('Invalid cart ID');
+      }
+
+      if (!Array.isArray(lines) || lines.length === 0) {
+        throw new Error('Invalid lines array');
+      }
+
+      // Validate each line
+      for (const line of lines) {
+        if (!line.id || typeof line.id !== 'string') {
+          throw new Error('Invalid line ID');
+        }
+        if (!Number.isInteger(line.quantity) || line.quantity < 0 || line.quantity > 100) {
+          throw new Error('Invalid quantity');
+        }
+      }
+
       const graphqlQuery = `
         mutation cartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
           cartLinesUpdate(cartId: $cartId, lines: $lines) {
@@ -424,8 +527,8 @@ class ShopifyAPI {
       const data = await this.graphqlRequest(graphqlQuery, { cartId, lines });
       
       if (data.cartLinesUpdate.userErrors.length > 0) {
-        const errorMessage = data.cartLinesUpdate.userErrors.map((e: any) => e.message).join(', ');
-        throw new Error(`Error al actualizar carrito: ${errorMessage}`);
+        console.error('Update cart errors:', data.cartLinesUpdate.userErrors);
+        throw new Error('No se pudo actualizar el carrito');
       }
 
       return data.cartLinesUpdate.cart as ShopifyCart;
