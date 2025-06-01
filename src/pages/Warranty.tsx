@@ -14,9 +14,11 @@ const Warranty = () => {
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">Garantía de Calidad</h2>
             <p>
-              En iParts Store, garantizamos la calidad de todos nuestros productos. 
-              Todas las piezas y accesorios para iPhone vienen con nuestra garantía 
-              de satisfacción de 30 días y garantía de fabricante cuando aplique.
+              En iParts Store, garantizamos la calidad de todos nuestros productos.
+              Todas nuestras piezas y accesorios para iPhone cuentan con una garantía contra defectos
+              de fabricación y fallos de funcionamiento.
+
+             Cuando aplique, también incluyen la garantía del fabricante correspondiente.
             </p>
           </section>
 
