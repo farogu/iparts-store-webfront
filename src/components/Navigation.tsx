@@ -90,47 +90,39 @@ const Navigation = ({
               </div>
             </div>
 
-            {/* Desktop Navigation */}
+            {/* Desktop Navigation - Productos */}
             <div className="hidden md:block">
-              <div className="ml-10 flex items-baseline space-x-8">
-                <a href="/" className="text-gray-900 hover:text-electric-blue px-3 py-2 text-sm font-medium transition-colors">
-                  Inicio
-                </a>
-                <div className="relative group">
-                  <button 
-                    className="text-gray-900 hover:text-electric-blue px-3 py-2 text-sm font-medium transition-colors flex items-center gap-1"
+              <div className="relative group">
+                <button 
+                  className="text-gray-900 hover:text-electric-blue px-3 py-2 text-sm font-medium transition-colors flex items-center gap-1"
+                  onClick={handleProductsClick}
+                >
+                  Productos
+                  {currentStep && (
+                    <Badge variant="secondary" className="ml-2 text-xs">
+                      {currentStep === 'models' && 'Seleccionar modelo'}
+                      {currentStep === 'parts' && 'Seleccionar pieza'}
+                      {currentStep === 'products' && 'Productos'}
+                    </Badge>
+                  )}
+                </button>
+                <div className="absolute left-0 mt-2 w-48 bg-white shadow-lg rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
+                  <button
                     onClick={handleProductsClick}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-electric-blue"
                   >
-                    Productos
-                    {currentStep && (
-                      <Badge variant="secondary" className="ml-2 text-xs">
-                        {currentStep === 'models' && 'Seleccionar modelo'}
-                        {currentStep === 'parts' && 'Seleccionar pieza'}
-                        {currentStep === 'products' && 'Productos'}
-                      </Badge>
-                    )}
+                    Buscar por modelo
                   </button>
-                  <div className="absolute left-0 mt-2 w-48 bg-white shadow-lg rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
-                    <button
-                      onClick={handleProductsClick}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-electric-blue"
+                  {categories.map((category) => (
+                    <a
+                      key={category}
+                      href={`/catalog?category=${category.toLowerCase()}`}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-electric-blue"
                     >
-                      Buscar por modelo
-                    </button>
-                    {categories.map((category) => (
-                      <a
-                        key={category}
-                        href={`/catalog?category=${category.toLowerCase()}`}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-electric-blue"
-                      >
-                        {category}
-                      </a>
-                    ))}
-                  </div>
+                      {category}
+                    </a>
+                  ))}
                 </div>
-                <a href="/contact" className="text-gray-900 hover:text-electric-blue px-3 py-2 text-sm font-medium transition-colors">
-                  Contacto
-                </a>
               </div>
             </div>
 
@@ -159,6 +151,13 @@ const Navigation = ({
                   </Button>
                 )}
               </form>
+            </div>
+
+            {/* Desktop Navigation - Contacto */}
+            <div className="hidden md:block">
+              <a href="/contact" className="text-gray-900 hover:text-electric-blue px-3 py-2 text-sm font-medium transition-colors">
+                Contacto
+              </a>
             </div>
 
             {/* Cart and Mobile Menu */}
