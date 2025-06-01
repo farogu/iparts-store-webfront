@@ -5,21 +5,21 @@ const Testimonials = () => {
   const testimonials = [
     {
       id: 1,
-      name: 'Carlos R.',
+      name: '-Carlos R.',
       role: 'Cliente Verificado (CDMX)',
       content: 'Pedí una pantalla para iPhone 13 y llegó súper rápido. La calidad es excelente, igualita a la original. Muy buena atención también.',
       rating: 5
     },
     {
       id: 2,
-      name: 'Andrea G.',
+      name: '-Andrea G.',
       role: 'Cliente Verificada (Guadalajara)',
       content: 'Tenía dudas sobre qué pieza era compatible con mi iPhone SE y me ayudaron por WhatsApp. Excelente servicio y buenos precios.',
       rating: 5
     },
     {
       id: 3,
-      name: 'Luis M.',
+      name: '-Luis M.',
       role: 'Técnico en Reparaciones (Monterrey)',
       content: 'He comprado varias veces piezas como baterías y conectores. Todo ha funcionado perfecto. Lo recomiendo para técnicos.',
       rating: 5
