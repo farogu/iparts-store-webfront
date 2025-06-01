@@ -1,28 +1,62 @@
 
-<div class="product-page">
-  <div class="container">
-    <div class="product-details">
-      <div class="product-images">
-        {% if product.featured_image %}
-          <img src="{{ product.featured_image | img_url: '600x600' }}" alt="{{ product.title }}">
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Product Images -->
+    <div>
+      {% if product.featured_image %}
+        <img src="{{ product.featured_image | img_url: '600x600' }}" 
+             alt="{{ product.title }}" 
+             class="w-full rounded-lg">
+      {% else %}
+        <div class="w-full h-96 bg-gray-200 rounded-lg flex items-center justify-center">
+          <span class="text-gray-400">Sin imagen</span>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Product Info -->
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900 mb-4">{{ product.title }}</h1>
+      
+      <div class="mb-6">
+        <span class="text-3xl font-bold text-blue-600">${{ product.price | money_without_currency }}</span>
+        {% if product.compare_at_price > product.price %}
+          <span class="text-lg text-gray-500 line-through ml-2">${{ product.compare_at_price | money_without_currency }}</span>
         {% endif %}
       </div>
-      
-      <div class="product-info">
-        <h1>{{ product.title }}</h1>
-        <div class="price">{{ product.price | money }}</div>
+
+      {% if product.description != blank %}
+        <div class="prose mb-6">
+          {{ product.description }}
+        </div>
+      {% endif %}
+
+      <!-- Add to Cart Form -->
+      {% form 'product', product %}
+        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
         
-        {% if product.metafields.custom.sunsky_sku %}
-          <div class="sunsky-info">
-            <span class="badge">Sunsky</span>
-            <span>SKU: {{ product.metafields.custom.sunsky_sku }}</span>
-          </div>
+        {% if product.available %}
+          <button type="submit" 
+                  class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700">
+            Agregar al Carrito
+          </button>
+        {% else %}
+          <button type="button" 
+                  disabled
+                  class="w-full bg-gray-400 text-white py-3 px-6 rounded-lg font-semibold cursor-not-allowed">
+            Agotado
+          </button>
         {% endif %}
-        
-        {% form 'product', product %}
-          <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
-          <button type="submit" class="btn-primary">Agregar al carrito</button>
-        {% endform %}
+      {% endform %}
+
+      <!-- Product Details -->
+      <div class="mt-8 border-t pt-6">
+        <h3 class="font-semibold text-gray-900 mb-2">Detalles del Producto</h3>
+        <ul class="text-gray-600 space-y-1">
+          <li>• Garantía de calidad</li>
+          <li>• Envío gratuito</li>
+          <li>• Soporte técnico</li>
+        </ul>
       </div>
     </div>
   </div>

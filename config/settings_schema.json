@@ -2,29 +2,8 @@
 [
   {
     "name": "theme_info",
-    "theme_name": "Sunsky iPhone Parts",
+    "theme_name": "iPhone Parts Store",
     "theme_version": "1.0.0",
-    "theme_author": "Sunsky Integration"
-  },
-  {
-    "name": "Configuración Sunsky",
-    "settings": [
-      {
-        "type": "header",
-        "content": "API de Sunsky"
-      },
-      {
-        "type": "text",
-        "id": "sunsky_api_key",
-        "label": "Clave API de Sunsky",
-        "info": "Ingresa tu clave API de Sunsky para conectar productos. Opcional - si no se proporciona, solo se mostrarán productos de Shopify."
-      },
-      {
-        "type": "checkbox",
-        "id": "enable_sunsky_integration",
-        "label": "Habilitar integración con Sunsky",
-        "default": false
-      }
-    ]
+    "theme_author": "Custom Theme"
   }
 ]

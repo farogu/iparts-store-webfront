@@ -1,29 +1,72 @@
 
-<div class="hero">
-  <div class="container">
-    <h1>Repuestos iPhone de Calidad</h1>
-    <p>Encuentra las mejores piezas para tu iPhone</p>
-  </div>
-</div>
-
-{% render 'model-selector' %}
-
-<div id="products-section">
-  <div class="container">
-    <h2>Productos Destacados</h2>
-    <div id="shopify-featured-grid" class="product-grid">
-      {% for product in collections.all.products limit: 8 %}
-        {% render 'product-card', product: product %}
-      {% endfor %}
-    </div>
-    
-    <div id="sunsky-featured" class="product-grid" style="display: none;">
-      <!-- Productos destacados de Sunsky -->
+<!-- Hero Banner -->
+<div class="bg-gradient-to-r from-blue-600 to-purple-700 text-white">
+  <div class="max-w-7xl mx-auto px-4 py-16">
+    <div class="text-center">
+      <h1 class="text-4xl md:text-6xl font-bold mb-4">
+        Repuestos iPhone de Calidad Premium
+      </h1>
+      <p class="text-xl mb-8 opacity-90">
+        Encuentra las mejores piezas para tu iPhone con garantía de calidad
+      </p>
+      <a href="/collections/all" class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100">
+        Ver Productos
+      </a>
     </div>
   </div>
 </div>
 
-<div class="loader" style="display: none;">
-  <div class="spinner"></div>
-  <p>Cargando productos...</p>
+<!-- Model Selector -->
+<div class="max-w-7xl mx-auto px-4 py-16">
+  <div class="text-center mb-12">
+    <h2 class="text-3xl font-bold text-gray-900 mb-4">Selecciona tu iPhone</h2>
+    <p class="text-gray-600">Elige tu modelo para ver productos compatibles</p>
+  </div>
+  
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+    <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg cursor-pointer">
+      <h3 class="font-semibold text-gray-900">iPhone 15</h3>
+      <p class="text-sm text-gray-500">2023</p>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg cursor-pointer">
+      <h3 class="font-semibold text-gray-900">iPhone 14</h3>
+      <p class="text-sm text-gray-500">2022</p>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg cursor-pointer">
+      <h3 class="font-semibold text-gray-900">iPhone 13</h3>
+      <p class="text-sm text-gray-500">2021</p>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg cursor-pointer">
+      <h3 class="font-semibold text-gray-900">iPhone 12</h3>
+      <p class="text-sm text-gray-500">2020</p>
+    </div>
+  </div>
+</div>
+
+<!-- Featured Products -->
+<div class="max-w-7xl mx-auto px-4 py-16">
+  <h2 class="text-3xl font-bold text-gray-900 text-center mb-12">Productos Destacados</h2>
+  
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    {% for product in collections.all.products limit: 8 %}
+      <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg">
+        <a href="{{ product.url }}">
+          {% if product.featured_image %}
+            <img src="{{ product.featured_image | img_url: '300x300' }}" 
+                 alt="{{ product.title }}" 
+                 class="w-full h-48 object-cover">
+          {% else %}
+            <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
+              <span class="text-gray-400">Sin imagen</span>
+            </div>
+          {% endif %}
+          
+          <div class="p-4">
+            <h3 class="font-semibold text-gray-900 mb-2">{{ product.title }}</h3>
+            <p class="text-blue-600 font-bold">${{ product.price | money_without_currency }}</p>
+          </div>
+        </a>
+      </div>
+    {% endfor %}
+  </div>
 </div>

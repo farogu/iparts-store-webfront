@@ -10,35 +10,40 @@
       <meta name="description" content="{{ page_description | escape }}">
     {% endif %}
     
-    {{ 'sunsky-theme.css' | asset_url | stylesheet_tag }}
+    {{ 'theme.css' | asset_url | stylesheet_tag }}
     {{ content_for_header }}
   </head>
 
-  <body>
-    <header class="header">
-      <div class="container">
-        <h1><a href="/">{{ shop.name }}</a></h1>
-        <nav>
-          <a href="/collections/all">Productos</a>
-          <a href="/pages/contact">Contacto</a>
-        </nav>
+  <body class="bg-gray-50 font-inter">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <div class="flex items-center space-x-8">
+            <a href="/" class="text-xl font-bold text-gray-900">{{ shop.name }}</a>
+            <div class="hidden md:flex space-x-6">
+              <a href="/collections/all" class="text-gray-600 hover:text-gray-900">Productos</a>
+              <a href="/pages/contact" class="text-gray-600 hover:text-gray-900">Contacto</a>
+            </div>
+          </div>
+          <div class="flex items-center space-x-4">
+            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+              Carrito (0)
+            </button>
+          </div>
+        </div>
       </div>
-    </header>
+    </nav>
 
     <main>{{ content_for_layout }}</main>
 
-    <footer class="footer">
-      <div class="container">
-        <p>&copy; {{ 'now' | date: "%Y" }} {{ shop.name }}</p>
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white mt-16">
+      <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="text-center">
+          <p>&copy; {{ 'now' | date: "%Y" }} {{ shop.name }}. Todos los derechos reservados.</p>
+        </div>
       </div>
     </footer>
-
-    <script src="{{ 'sunsky-integration.js' | asset_url }}"></script>
-    <script>
-      window.sunskySettings = {
-        apiKey: {{ settings.sunsky_api_key | json }},
-        enabled: {{ settings.enable_sunsky_integration | json }}
-      };
-    </script>
   </body>
 </html>

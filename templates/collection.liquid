@@ -1,28 +1,50 @@
 
-<div class="collection-header">
-  <div class="container">
-    <h1>{{ collection.title }}</h1>
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <!-- Collection Header -->
+  <div class="text-center mb-12">
+    <h1 class="text-3xl font-bold text-gray-900 mb-4">{{ collection.title }}</h1>
     {% if collection.description != blank %}
-      <p>{{ collection.description }}</p>
+      <p class="text-gray-600">{{ collection.description }}</p>
     {% endif %}
   </div>
-</div>
 
-<div class="container">
-  {% render 'model-selector' %}
-
-  <div id="shopify-product-grid" class="product-grid">
+  <!-- Products Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
     {% for product in collection.products %}
-      {% render 'product-card', product: product %}
+      <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg">
+        <a href="{{ product.url }}">
+          {% if product.featured_image %}
+            <img src="{{ product.featured_image | img_url: '300x300' }}" 
+                 alt="{{ product.title }}" 
+                 class="w-full h-48 object-cover">
+          {% else %}
+            <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
+              <span class="text-gray-400">Sin imagen</span>
+            </div>
+          {% endif %}
+          
+          <div class="p-4">
+            <h3 class="font-semibold text-gray-900 mb-2">{{ product.title }}</h3>
+            <p class="text-blue-600 font-bold">${{ product.price | money_without_currency }}</p>
+            
+            {% if product.available %}
+              <span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full mt-2">
+                Disponible
+              </span>
+            {% else %}
+              <span class="inline-block bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full mt-2">
+                Agotado
+              </span>
+            {% endif %}
+          </div>
+        </a>
+      </div>
     {% endfor %}
   </div>
-  
-  <div id="sunsky-products" class="product-grid" style="display: none;">
-    <!-- Productos de Sunsky se cargan aquí -->
-  </div>
-</div>
 
-<div class="loader" style="display: none;">
-  <div class="spinner"></div>
-  <p>Cargando productos...</p>
+  {% if collection.products.size == 0 %}
+    <div class="text-center py-12">
+      <p class="text-gray-500">No hay productos en esta colección.</p>
+    </div>
+  {% endif %}
 </div>
