@@ -44,6 +44,16 @@ export class GraphQLClient {
       headers['X-Requested-With'] = 'XMLHttpRequest';
     }
 
+    // Enhanced logging for debugging
+    console.log('🔍 GraphQL Request Details:', {
+      endpoint: SHOPIFY_GRAPHQL_URL,
+      domain: shopifyConfig.domain,
+      hasToken: !!accessToken,
+      tokenPreview: accessToken ? `${accessToken.substring(0, 8)}...` : 'NO TOKEN',
+      queryType: query.trimStart().split(' ')[0],
+      variables: sanitizedVariables
+    });
+
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), environment.apiTimeout);
@@ -60,14 +70,24 @@ export class GraphQLClient {
 
       clearTimeout(timeoutId);
 
+      console.log('📡 Response Status:', response.status, response.statusText);
+
       // Enhanced error handling
       if (!response.ok) {
+        const errorText = await response.text().catch(() => 'No response body');
+        console.error('🚨 HTTP Error Details:', {
+          status: response.status,
+          statusText: response.statusText,
+          headers: Object.fromEntries(response.headers.entries()),
+          body: errorText
+        });
+
         switch (response.status) {
           case 401:
             shopifyAuth.clearSession();
-            throw new Error('Error de autenticación. Por favor, recarga la página.');
+            throw new Error('Error de autenticación. Verifica tu token de Shopify y recarga la página.');
           case 403:
-            throw new Error('Acceso denegado. Verifica la configuración.');
+            throw new Error('Acceso denegado. El token no tiene los permisos necesarios.');
           case 429:
             const retryAfter = response.headers.get('Retry-After');
             const message = retryAfter 
@@ -75,31 +95,37 @@ export class GraphQLClient {
               : 'Demasiadas solicitudes. Intenta de nuevo en unos momentos.';
             throw new Error(message);
           case 422:
-            throw new Error('Datos de solicitud inválidos.');
+            throw new Error('Datos de solicitud inválidos. Verifica la configuración de Shopify.');
           case 500:
           case 502:
           case 503:
           case 504:
             throw new Error('Servicio temporalmente no disponible. Intenta más tarde.');
           case 404:
-            throw new Error('Recurso no encontrado.');
+            throw new Error('Tienda de Shopify no encontrada. Verifica el dominio.');
           default:
-            throw new Error('Error de conexión con el servicio.');
+            throw new Error(`Error de conexión (${response.status}): ${response.statusText}`);
         }
       }
 
       const result = await response.json();
       
+      console.log('✅ GraphQL Response:', {
+        hasData: !!result.data,
+        hasErrors: !!result.errors,
+        dataKeys: result.data ? Object.keys(result.data) : []
+      });
+      
       if (result.errors) {
-        console.error('GraphQL errors:', result.errors);
+        console.error('🚨 GraphQL errors:', result.errors);
         
         const firstError = result.errors[0];
         if (firstError?.extensions?.code === 'ACCESS_DENIED') {
           shopifyAuth.clearSession();
-          throw new Error('Sesión expirada. Por favor, recarga la página.');
+          throw new Error('Token de acceso inválido. Verifica la configuración en Shopify.');
         }
         
-        throw new Error('Error procesando la solicitud.');
+        throw new Error(`Error de GraphQL: ${firstError?.message || 'Error desconocido'}`);
       }
 
       // Validate response structure
@@ -114,11 +140,13 @@ export class GraphQLClient {
 
       return result.data;
     } catch (error) {
+      console.error('🚨 GraphQL Client Error:', error);
+      
       if (error instanceof TypeError && error.message.includes('fetch')) {
-        throw new Error('Error de conexión. Verifica tu internet y intenta de nuevo.');
+        throw new Error('Error de red. Verifica tu conexión a internet y la configuración de Shopify.');
       }
       if (error instanceof DOMException && error.name === 'AbortError') {
-        throw new Error('Tiempo de espera agotado. Intenta de nuevo.');
+        throw new Error('Tiempo de espera agotado. Verifica la conexión con Shopify.');
       }
       throw error;
     }

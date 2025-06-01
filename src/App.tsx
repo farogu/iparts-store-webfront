@@ -1,71 +1,57 @@
 
-import { Suspense, lazy } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import ErrorBoundary from "@/components/ErrorBoundary";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import { useState } from "react";
+import Index from "./pages/Index";
+import ProductDetail from "./pages/ProductDetail";
+import Catalog from "./pages/Catalog";
+import Contact from "./pages/Contact";
+import ProductFlow from "./pages/ProductFlow";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
+import Warranty from "./pages/Warranty";
+import NotFound from "./pages/NotFound";
+import ShopifyDiagnostic from "./pages/ShopifyDiagnostic";
+import ErrorBoundary from "./components/ErrorBoundary";
 
-// Lazy load pages for better performance
-const Index = lazy(() => import("./pages/Index"));
-const Catalog = lazy(() => import("./pages/Catalog"));
-const Contact = lazy(() => import("./pages/Contact"));
-const NotFound = lazy(() => import("./pages/NotFound"));
-const ProductFlow = lazy(() => import("./pages/ProductFlow"));
-const ProductDetail = lazy(() => import("./pages/ProductDetail"));
-const Privacy = lazy(() => import("./pages/Privacy"));
-const Terms = lazy(() => import("./pages/Terms"));
-const Warranty = lazy(() => import("./pages/Warranty"));
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: (failureCount, error) => {
-        // Don't retry on 4xx errors (client errors)
-        if (error instanceof Error && error.message.includes('unauthorized')) {
-          return false;
-        }
-        return failureCount < 2;
+const App = () => {
+  const [queryClient] = useState(() => new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 60 * 1000,
+        retry: 3,
+        refetchOnWindowFocus: false,
       },
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      gcTime: 10 * 60 * 1000, // 10 minutes
     },
-  },
-});
+  }));
 
-const LoadingFallback = () => (
-  <div className="min-h-screen flex items-center justify-center">
-    <LoadingSpinner size="lg" text="Cargando página..." />
-  </div>
-);
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
+  return (
     <ErrorBoundary>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Suspense fallback={<LoadingFallback />}>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
-              <Route path="/productos" element={<ProductFlow />} />
               <Route path="/catalog" element={<Catalog />} />
               <Route path="/product/:id" element={<ProductDetail />} />
               <Route path="/contact" element={<Contact />} />
-              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/product-flow" element={<ProductFlow />} />
               <Route path="/terms" element={<Terms />} />
+              <Route path="/privacy" element={<Privacy />} />
               <Route path="/warranty" element={<Warranty />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="/shopify-diagnostic" element={<ShopifyDiagnostic />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
-          </Suspense>
-        </BrowserRouter>
-      </TooltipProvider>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
     </ErrorBoundary>
-  </QueryClientProvider>
-);
+  );
+};
 
 export default App;
