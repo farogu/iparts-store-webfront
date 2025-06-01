@@ -1,6 +1,6 @@
-
 import { shopifyConfig } from '@/config/shopify';
 import { environment } from '@/config/environment';
+import { secureStorage } from '@/utils/secureStorage';
 
 interface ShopifyAuthParams {
   shop: string;
@@ -123,7 +123,7 @@ class ShopifyAuthService {
       }
 
       // Validate state and prevent CSRF
-      if (!this.validateAndConsumeState(state, shop)) {
+      if (!await this.validateAndConsumeState(state, shop)) {
         throw new Error('Invalid or expired state parameter');
       }
 
@@ -166,10 +166,8 @@ class ShopifyAuthService {
     localStorage.removeItem('shopify_auth_state');
     
     // Clear secure storage
-    import('./secureStorage').then(({ secureStorage }) => {
-      secureStorage.removeItem('shopify_session');
-      secureStorage.removeItem('shopify_auth_state');
-    });
+    secureStorage.removeItem('shopify_session');
+    secureStorage.removeItem('shopify_auth_state');
   }
 
   private generateSecureState(): string {
@@ -183,7 +181,7 @@ class ShopifyAuthService {
     throw new Error('Secure random generation not available');
   }
 
-  private storeAuthState(state: string, shop: string): void {
+  private async storeAuthState(state: string, shop: string): Promise<void> {
     const authState: ShopifyAuthState = {
       shop,
       timestamp: Date.now(),
@@ -191,34 +189,28 @@ class ShopifyAuthService {
     };
     
     // Store with short TTL (5 minutes)
-    import('./secureStorage').then(({ secureStorage }) => {
-      secureStorage.setItem('shopify_auth_state', JSON.stringify(authState), 5 * 60 * 1000);
-    });
+    await secureStorage.setItem('shopify_auth_state', JSON.stringify(authState), 5 * 60 * 1000);
   }
 
-  private validateAndConsumeState(state: string, shop: string): boolean {
+  private async validateAndConsumeState(state: string, shop: string): Promise<boolean> {
     try {
-      import('./secureStorage').then(async ({ secureStorage }) => {
-        const storedStateStr = await secureStorage.getItem('shopify_auth_state');
-        if (!storedStateStr) return false;
+      const storedStateStr = await secureStorage.getItem('shopify_auth_state');
+      if (!storedStateStr) return false;
 
-        const storedState: ShopifyAuthState = JSON.parse(storedStateStr);
-        
-        // Validate state matches and shop matches
-        if (storedState.nonce !== state || storedState.shop !== shop) {
-          return false;
-        }
-
-        // Check if state is not too old (5 minutes max)
-        if (Date.now() - storedState.timestamp > 5 * 60 * 1000) {
-          return false;
-        }
-
-        // Consume the state (remove it)
-        secureStorage.removeItem('shopify_auth_state');
-        return true;
-      });
+      const storedState: ShopifyAuthState = JSON.parse(storedStateStr);
       
+      // Validate state matches and shop matches
+      if (storedState.nonce !== state || storedState.shop !== shop) {
+        return false;
+      }
+
+      // Check if state is not too old (5 minutes max)
+      if (Date.now() - storedState.timestamp > 5 * 60 * 1000) {
+        return false;
+      }
+
+      // Consume the state (remove it)
+      secureStorage.removeItem('shopify_auth_state');
       return true;
     } catch (error) {
       console.error('State validation failed:', error);
