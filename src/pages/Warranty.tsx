@@ -70,7 +70,7 @@ const Warranty = () => {
                 <div className="bg-electric-blue text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">1</div>
                 <div>
                   <h4 className="font-semibold">Contacta con nuestro equipo</h4>
-                  <p>Envía un email a returns@ipartsstore.com con tu número de pedido</p>
+                  <p>Envía un email a contacto@ipartsstore.com con tu número de pedido.</p>
                 </div>
               </div>
               <div className="flex items-start space-x-4">
