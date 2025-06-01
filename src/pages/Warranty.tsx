@@ -24,21 +24,21 @@ const Warranty = () => {
             <h2 className="text-2xl font-semibold text-gray-900 mb-4">Cobertura de Garantía</h2>
             <div className="grid md:grid-cols-2 gap-6">
               <div className="bg-green-50 p-6 rounded-lg border border-green-200">
-                <h3 className="text-xl font-semibold text-green-800 mb-3">Productos Originales</h3>
+                <h3 className="text-xl font-semibold text-green-800 mb-3">Repuestos Electrónicos</h3>
                 <ul className="space-y-2 text-green-700">
-                  <li>• Garantía de 12 meses</li>
+                  <li>• Garantía de 3 meses</li>
                   <li>• Defectos de fabricación</li>
                   <li>• Funcionamiento incorrecto</li>
                   <li>• Reemplazo gratuito</li>
                 </ul>
               </div>
               <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
-                <h3 className="text-xl font-semibold text-blue-800 mb-3">Productos Compatibles</h3>
+                <h3 className="text-xl font-semibold text-blue-800 mb-3">Productos Compatibles y Accesorios</h3>
                 <ul className="space-y-2 text-blue-700">
                   <li>• Garantía de 6 meses</li>
                   <li>• Defectos de fabricación</li>
-                  <li>• Devolución del dinero</li>
                   <li>• Soporte técnico incluido</li>
+                  <li>• Reemplazo gratuito</li>
                 </ul>
               </div>
             </div>
@@ -50,7 +50,7 @@ const Warranty = () => {
               <h3 className="text-lg font-semibold mb-3">Plazo de Devolución: 30 días</h3>
               <p className="mb-4">
                 Puedes devolver cualquier producto dentro de 30 días desde la fecha 
-                de compra si no estás completamente satisfecho.
+                de entrega siempre y cuando cumpla con las siguientes condiciones.
               </p>
               
               <h4 className="font-semibold mb-2">Condiciones para Devoluciones:</h4>
